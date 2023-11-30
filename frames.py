@@ -1,5 +1,6 @@
 import customtkinter as ctk
 from buttons import*
+from text_entry import *
 
 
 # beinhaltet das Entry Feld und den hinzufügen Button
@@ -7,8 +8,6 @@ class EntryFrame(ctk.CTkFrame):
     def __init__(self, parent, add_task, entry_string, frame_bg_color):
         super().__init__(parent, corner_radius=0, fg_color=frame_bg_color)
         self.pack(fill="x")
-        
-        self.frame_bg_color = frame_bg_color
 
         # Entry zum Eingeben der Aufgaben
         entry = ctk.CTkEntry(self, textvariable=entry_string, corner_radius=5, border_width=1, width=200)
@@ -46,12 +45,22 @@ class TasksFrame(ctk.CTkScrollableFrame):
             single_note_frame.columnconfigure(1, weight=1, uniform="a")  # In column 1 befindet sich das Frame für die beiden Buttons jeder Notiz - notes_button_frame
 
             # Das Textfeld der Notiz
-            text_box = ctk.CTkTextbox(
-                single_note_frame, font=self.notes_font,
-                height=60, fg_color="#efb640",
-                text_color="black", corner_radius=5)
+            text_box = TextboxGrid(
+                parent=single_note_frame,
+                corner_radius=5,
+                height=60,
+                font=self.notes_font,
+                fg_color="#efb640",
+                bg_color=self.frame_bg_color,
+                column=0,
+                columnspan=1,
+                row=count,
+                sticky="ew",
+                pady=5,
+                padx=10,
+                text_color="black"
+            )
             text_box.insert("end", new_task)  # Hier wird die Eingabe aus dem Entry Feld in die text_box geschieben
-            text_box.grid(column=0, row=count, sticky="ew", pady=5, padx=10)
 
             # Das Frame was beide Buttons beinhaltet
             notes_button_frame = NormalGridFrame(parent=single_note_frame, corner_radius=0, fg_color=self.frame_bg_color, column=1, row=count, sticky="nsew")

@@ -8,6 +8,7 @@ import pickle
 from PIL import Image
 import pyperclip
 import pytesseract
+from text_entry import *
 import tkinter as tk
 from tkinter.filedialog import askopenfilename
 pytesseract.pytesseract.tesseract_cmd = r'C:\Program Files\Tesseract-OCR\tesseract.exe'
@@ -171,13 +172,12 @@ class Notes(ctk.CTkFrame):
 
         # Diese StringVariable setzt den initial Wert des Entry Feldes
         self.entry_str = ctk.StringVar(value="")
-        self.frame_bg_color = frame_bg_color
         self.count = 0
         self.notes_file = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'notizen.txt')
 
         # Frames
-        EntryFrame(self, self.add_task, self.entry_str, self.frame_bg_color)
-        self.tasks_frame = TasksFrame(self, self.delete_task, notes_font, self.frame_bg_color)
+        EntryFrame(self, self.add_task, self.entry_str, frame_bg_color)
+        self.tasks_frame = TasksFrame(self, self.delete_task, notes_font, frame_bg_color)
         self.read_notes_text_at_start()
 
     def read_notes_text_at_start(self):
@@ -237,7 +237,7 @@ class TextMulti(ctk.CTkFrame):
         self.textbox_font = textbox_font
 
         # color
-        self.button_color = ("#f3f3f3", "#191919")
+        self.button_color = frame_bg_color
         self.button_color_hover = button_color_hover
         self.button_font_color = ("#2c2c2c", "#5e5e5e")
         self.frame_bg_color = frame_bg_color
@@ -306,15 +306,21 @@ class TextMulti(ctk.CTkFrame):
             image=self.image2text
         )
 
-        self.textbox = ctk.CTkTextbox(
-            self,
+        self.textbox = TextboxGrid(
+            parent=self,
             corner_radius=0,
             height=300,
             font=self.textbox_font,
-            fg_color=("#f3f3f3", "#191919"),
-            bg_color=("#191919", "#f3f3f3")
+            fg_color=self.frame_bg_color,
+            bg_color=("#191919", "#f3f3f3"),
+            column=0,
+            columnspan=2,
+            row=2,
+            sticky="nsew",
+            pady=0,
+            padx=0,
+            text_color=("#191919", "#f3f3f3")
         )
-        self.textbox.grid(column=0, columnspan=2, row=2, sticky="nsew")
 
         self.copy_button = Button(
             parent=self,
