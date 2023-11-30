@@ -1,4 +1,5 @@
 import customtkinter as ctk
+from buttons import*
 
 
 # beinhaltet das Entry Feld und den hinzufügen Button
@@ -25,7 +26,6 @@ class EntryFrame(ctk.CTkFrame):
 class TasksFrame(ctk.CTkScrollableFrame):
     def __init__(self, parent, delete_task, notes_font):
         super().__init__(parent, corner_radius=0, fg_color=("white", "#191919"))
-        self.check_button = ctk.CTkCheckBox(self)
         self.pack(fill="both", expand=True)
 
         self.columnconfigure(0, weight=1, uniform="a")
@@ -59,17 +59,7 @@ class TasksFrame(ctk.CTkScrollableFrame):
             button_frame.grid(column=1, row=count, sticky="nsew")
 
             # Button zum Setzen der Notiz auf "Erledigt"
-            self.check_button = ctk.CTkCheckBox(
-                button_frame, text="", fg_color="green",
-                checkbox_height=20, checkbox_width=20,
-                border_width=1, border_color="#5e5e5e",
-                hover_color="green")
-            self.check_button.pack(pady=5, anchor="w")
+            CheckButton(button_frame,"", "green", 20, 20, 1, "#5e5e5e", "green")
 
             # Button zum Entfernen der Notiz
-            delete_button = ctk.CTkButton(
-                button_frame, text="X", fg_color="#970000",
-                height=20, width=20, hover_color="#ff0000",
-                command=lambda: self.delete_task(single_note_frame, new_task))
-            delete_button.pack(pady=5, anchor="w")
-
+            ButtonPack(button_frame, 20, 20, "#970000", "#ff0000", lambda: self.delete_task(single_note_frame, new_task), "x")
