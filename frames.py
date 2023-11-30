@@ -15,10 +15,7 @@ class EntryFrame(ctk.CTkFrame):
         # Button zum Hinzufügen der Aufgaben - führt beim klicken die Methode
         # add_task aus welche in der Klasse Notes deklariert und beim Aufruf
         # an die EntryFrame Klasse übergeben wird
-        entry_button = ctk.CTkButton(
-            self, text="+",
-            command=add_task, width=20, height=20)
-        entry_button.pack(side="left")
+        ButtonPack(self, 20, 20, "blue", "red", add_task, "+", 0, anchor=None, side="left")
 
 
 # Klasse zum Hinzufügen von neuen Notizzetteln
@@ -37,14 +34,12 @@ class TasksFrame(ctk.CTkScrollableFrame):
     # ein label mit dem listen Eintrag und zwei buttons enthält
     def update_tasks(self, new_task, count):
         if new_task:
+            
             # Das Main Frame der einzelnen Notiz
-            single_note_frame = ctk.CTkFrame(self, corner_radius=0, fg_color=("white", "#191919"))
-            single_note_frame.grid(column=0, row=count, sticky="nsew")
-
-            # Das Grid des Frames definieren - in column 0 befindet sich die text_box
-            single_note_frame.columnconfigure(0, weight=10, uniform="a")
-            # In column 1 befindet sich das Frame für die beiden Buttons jeder Notiz - button_frame
-            single_note_frame.columnconfigure(1, weight=1, uniform="a")
+            single_note_frame = NormalGridFrame(self, 0, ("white", "#191919"), 0, count, "nsew")
+ 
+            single_note_frame.columnconfigure(0, weight=10, uniform="a")  # Das Grid des Frames definieren - in column 0 befindet sich die text_box
+            single_note_frame.columnconfigure(1, weight=1, uniform="a")  # In column 1 befindet sich das Frame für die beiden Buttons jeder Notiz - notes_button_frame
 
             # Das Textfeld der Notiz
             text_box = ctk.CTkTextbox(
@@ -55,11 +50,16 @@ class TasksFrame(ctk.CTkScrollableFrame):
             text_box.grid(column=0, row=count, sticky="ew", pady=5, padx=10)
 
             # Das Frame was beide Buttons beinhaltet
-            button_frame = ctk.CTkFrame(single_note_frame, corner_radius=0, fg_color=("white", "#191919"))
-            button_frame.grid(column=1, row=count, sticky="nsew")
+            notes_button_frame = NormalGridFrame(parent=single_note_frame, corner_radius=0, fg_color=("white", "#191919"), column=1, row=count, sticky="nsew")
 
             # Button zum Setzen der Notiz auf "Erledigt"
-            CheckButton(button_frame,"", "green", 20, 20, 1, "#5e5e5e", "green")
+            CheckButton(notes_button_frame,"", "green", 20, 20, 1, "#5e5e5e", "green")
 
             # Button zum Entfernen der Notiz
-            ButtonPack(button_frame, 20, 20, "#970000", "#ff0000", lambda: self.delete_task(single_note_frame, new_task), "x")
+            ButtonPack(notes_button_frame, 20, 20, "#970000", "#ff0000", lambda: self.delete_task(single_note_frame, new_task), "x", "5", "w")
+
+
+class NormalGridFrame(ctk.CTkFrame):
+    def __init__(self, parent, corner_radius, fg_color, column, row, sticky):
+        super().__init__(parent, corner_radius=corner_radius, fg_color=fg_color)
+        self.grid(column=column, row=row, sticky=sticky)
