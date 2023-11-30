@@ -4,9 +4,11 @@ from buttons import*
 
 # beinhaltet das Entry Feld und den hinzufügen Button
 class EntryFrame(ctk.CTkFrame):
-    def __init__(self, parent, add_task, entry_string):
-        super().__init__(parent, corner_radius=0, fg_color=("white", "#191919"))
+    def __init__(self, parent, add_task, entry_string, frame_bg_color):
+        super().__init__(parent, corner_radius=0, fg_color=frame_bg_color)
         self.pack(fill="x")
+        
+        self.frame_bg_color = frame_bg_color
 
         # Entry zum Eingeben der Aufgaben
         entry = ctk.CTkEntry(self, textvariable=entry_string, corner_radius=5, border_width=1, width=200)
@@ -21,11 +23,13 @@ class EntryFrame(ctk.CTkFrame):
 # Klasse zum Hinzufügen von neuen Notizzetteln
 # dies ist das Parent Frame für alle Notizen unter dem Entry Feld
 class TasksFrame(ctk.CTkScrollableFrame):
-    def __init__(self, parent, delete_task, notes_font):
-        super().__init__(parent, corner_radius=0, fg_color=("white", "#191919"))
+    def __init__(self, parent, delete_task, notes_font, frame_bg_color):
+        super().__init__(parent, corner_radius=0, fg_color=frame_bg_color)
         self.pack(fill="both", expand=True)
 
         self.columnconfigure(0, weight=1, uniform="a")
+        
+        self.frame_bg_color = frame_bg_color
         self.delete_task = delete_task
         self.notes_font = notes_font
 
@@ -36,7 +40,7 @@ class TasksFrame(ctk.CTkScrollableFrame):
         if new_task:
             
             # Das Main Frame der einzelnen Notiz
-            single_note_frame = NormalGridFrame(self, 0, ("white", "#191919"), 0, count, "nsew")
+            single_note_frame = NormalGridFrame(self, 0, self.frame_bg_color, 0, count, "nsew")
  
             single_note_frame.columnconfigure(0, weight=10, uniform="a")  # Das Grid des Frames definieren - in column 0 befindet sich die text_box
             single_note_frame.columnconfigure(1, weight=1, uniform="a")  # In column 1 befindet sich das Frame für die beiden Buttons jeder Notiz - notes_button_frame
@@ -50,7 +54,7 @@ class TasksFrame(ctk.CTkScrollableFrame):
             text_box.grid(column=0, row=count, sticky="ew", pady=5, padx=10)
 
             # Das Frame was beide Buttons beinhaltet
-            notes_button_frame = NormalGridFrame(parent=single_note_frame, corner_radius=0, fg_color=("white", "#191919"), column=1, row=count, sticky="nsew")
+            notes_button_frame = NormalGridFrame(parent=single_note_frame, corner_radius=0, fg_color=self.frame_bg_color, column=1, row=count, sticky="nsew")
 
             # Button zum Setzen der Notiz auf "Erledigt"
             CheckButton(notes_button_frame,"", "green", 20, 20, 1, "#5e5e5e", "green")

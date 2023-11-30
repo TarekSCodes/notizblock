@@ -53,15 +53,16 @@ class App(ctk.CTk):
     def setup_colors(self):
         # colors
         self.button_color_hover = ("#dadada", "#2c2c2c")
+        self.frame_bg_color = ("#f3f3f3", "#191919")
 
     def setup_frames(self):
-        self.note_frame = Notes(self, self.notes_font)
+        self.note_frame = Notes(self, self.notes_font, self.frame_bg_color)
         self.note_frame.pack_forget()
-        self.text_multi_frame = TextMulti(self, self.button_font_small, self.textbox_font, self.button_color_hover)
+        self.text_multi_frame = TextMulti(self, self.button_font_small, self.textbox_font, self.button_color_hover, self.frame_bg_color)
         self.text_multi_frame.pack_forget()
         TopMenu(self, self.button_font, self.button_color_hover,
                 self.button_font_small, self.textbox_font,
-                self.text_multi_frame, self.note_frame)
+                self.text_multi_frame, self.note_frame, self.frame_bg_color)
         TopSeparator(self)
         self.note_frame.pack(expand=True, fill="both")
 
@@ -81,8 +82,8 @@ class App(ctk.CTk):
 
 class TopMenu(ctk.CTkFrame):
     def __init__(self, parent, button_font, button_color_hover,
-                 button_font_small,textbox_font, text_multi_frame, note_frame):
-        super().__init__(parent, fg_color=("#f3f3f3", "#191919"), corner_radius=0)
+                 button_font_small,textbox_font, text_multi_frame, note_frame, frame_bg_color):
+        super().__init__(parent, fg_color=frame_bg_color, corner_radius=0)
         self.pack(fill="x", ipady=10)
 
         # define top menu grid
@@ -92,6 +93,7 @@ class TopMenu(ctk.CTkFrame):
         # Eingaben aus der Hauptklasse (App)
         self.button_font = button_font
         self.button_color_hover = button_color_hover
+        self.frame_bg_color = frame_bg_color
         self.button_font_small = button_font_small
         self.textbox_font = textbox_font
         self.text_multi_frame = text_multi_frame
@@ -163,18 +165,19 @@ class TopSeparator(ctk.CTkFrame):
 
 
 class Notes(ctk.CTkFrame):
-    def __init__(self, parent, notes_font):
-        super().__init__(parent, fg_color="#191919")
+    def __init__(self, parent, notes_font, frame_bg_color):
+        super().__init__(parent, fg_color=frame_bg_color)
         self.pack(expand=True, fill="both")
 
         # Diese StringVariable setzt den initial Wert des Entry Feldes
         self.entry_str = ctk.StringVar(value="")
+        self.frame_bg_color = frame_bg_color
         self.count = 0
         self.notes_file = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'notizen.txt')
 
         # Frames
-        EntryFrame(self, self.add_task, self.entry_str)
-        self.tasks_frame = TasksFrame(self, self.delete_task, notes_font)
+        EntryFrame(self, self.add_task, self.entry_str, self.frame_bg_color)
+        self.tasks_frame = TasksFrame(self, self.delete_task, notes_font, self.frame_bg_color)
         self.read_notes_text_at_start()
 
     def read_notes_text_at_start(self):
@@ -225,8 +228,8 @@ class Notes(ctk.CTkFrame):
 
 
 class TextMulti(ctk.CTkFrame):
-    def __init__(self, parent, button_font_small, textbox_font, button_color_hover):
-        super().__init__(parent, fg_color=("#f3f3f3", "#191919"), corner_radius=0)
+    def __init__(self, parent, button_font_small, textbox_font, button_color_hover, frame_bg_color):
+        super().__init__(parent, fg_color=frame_bg_color, corner_radius=0)
         self.pack(expand=True, fill="both")
 
         # font
@@ -237,6 +240,7 @@ class TextMulti(ctk.CTkFrame):
         self.button_color = ("#f3f3f3", "#191919")
         self.button_color_hover = button_color_hover
         self.button_font_color = ("#2c2c2c", "#5e5e5e")
+        self.frame_bg_color = frame_bg_color
 
         # images
         copy_icon = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'copy_light.png')
