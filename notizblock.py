@@ -22,8 +22,6 @@ except:
 #  - eingabe feld zum text übersetzen
 #  - pytesseract Dateipfad os.path.join verwenden
 #  - Status des Erledigt Buttons mit abspeichern
-#  - images in einen eigenen Ordner verschieben, für mehr Ordnung
-#  - Dateipfade der images anpassen
 
 class App(ctk.CTk):
     def __init__(self, title, size, is_dark):
@@ -32,7 +30,7 @@ class App(ctk.CTk):
         self.setup_window(title, size, is_dark)  # Window Setup
         self.setup_fonts()
         self.setup_colors()
-        #self.setup_images()
+        self.setup_images()
         self.setup_frames()
 
         self.mainloop()
@@ -58,18 +56,54 @@ class App(ctk.CTk):
         # colors
         self.button_color_hover = ("#dadada", "#2c2c2c")
         self.frame_bg_color = ("#f3f3f3", "#191919")
+        self.frame_bg_color_invert = ("#191919", "#f3f3f3")
+        self.button_font_color = ("#2c2c2c", "#5e5e5e")
 
-    #def setup_images(self):
-    #    self.add_button_image = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'images/add-button.png')    
+    def setup_images(self):
+        # image des add buttons zum hinzufügen von Notizen
+        add_icon = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'images/add_button.png')
+        add_icon_light = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'images/add_button_light.png')
+        self.add_button_image = ctk.CTkImage(light_image=Image.open(add_icon_light), dark_image=Image.open(add_icon))
+        
+        # image des kopieren buttons welcher den übersetzten Text in die Zwischenablage kopiert
+        copy_icon = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'images/copy_light.png')
+        copy_icon_dark = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'images/copy_dark.png')
+        self.copy_image = ctk.CTkImage(light_image=Image.open(copy_icon), dark_image=Image.open(copy_icon_dark), size=(15, 15))
+        
+        # image des image2text buttons
+        image_icon = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'images/image2text_light.png')
+        image_icon_dark = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'images/image2text_dark.png')
+        self.image2text = ctk.CTkImage(light_image=Image.open(image_icon), dark_image=Image.open(image_icon_dark))
+        
+        # image des Notizen Tabs im Hauptmenu
+        notizen_icon = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'images/notizen.png')
+        notizen_icon_dark = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'images/notizen_dark.png')
+        self.notizen_icon = ctk.CTkImage(light_image=Image.open(notizen_icon), dark_image=Image.open(notizen_icon_dark), size=(30, 30))
+
+        # image des Übersetzer Tabs im Hauptmenu
+        translator_icon = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'images/übersetzer.png')
+        translator_icon_dark = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'images/übersetzer_dark.png')
+        self.translator_icon = ctk.CTkImage(light_image=Image.open(translator_icon), dark_image=Image.open(translator_icon_dark), size=(30, 30))
         
     def setup_frames(self):
-        self.note_frame = Notes(self, self.notes_font, self.frame_bg_color, self.button_color_hover)
+        self.note_frame = Notes(self, self.notes_font, self.frame_bg_color, self.button_color_hover, self.add_button_image)
         self.note_frame.pack_forget()
-        self.text_multi_frame = TextMulti(self, self.button_font_small, self.textbox_font, self.button_color_hover, self.frame_bg_color)
+        self.text_multi_frame = TextMulti(
+            self,
+            self.button_font_small,
+            self.textbox_font,
+            self.button_color_hover,
+            self.frame_bg_color,
+            self.frame_bg_color_invert,
+            self.button_font_color,
+            self.copy_image,
+            self.image2text
+            )
         self.text_multi_frame.pack_forget()
         TopMenu(self, self.button_font, self.button_color_hover,
                 self.button_font_small, self.textbox_font,
-                self.text_multi_frame, self.note_frame, self.frame_bg_color)
+                self.text_multi_frame, self.note_frame, self.frame_bg_color,
+                self.notizen_icon, self.translator_icon)
         TopSeparator(self)
         self.note_frame.pack(expand=True, fill="both")
 
@@ -89,7 +123,7 @@ class App(ctk.CTk):
 
 class TopMenu(ctk.CTkFrame):
     def __init__(self, parent, button_font, button_color_hover,
-                 button_font_small,textbox_font, text_multi_frame, note_frame, frame_bg_color):
+                 button_font_small,textbox_font, text_multi_frame, note_frame, frame_bg_color, notizen_icon, translator_icon):
         super().__init__(parent, fg_color=frame_bg_color, corner_radius=0)
         self.pack(fill="x", ipady=10)
 
@@ -99,28 +133,14 @@ class TopMenu(ctk.CTkFrame):
 
         # Eingaben aus der Hauptklasse (App)
         self.button_font = button_font
-        self.button_color_hover = button_color_hover
-        self.frame_bg_color = frame_bg_color
         self.button_font_small = button_font_small
         self.textbox_font = textbox_font
+        self.button_color_hover = button_color_hover
+        self.frame_bg_color = frame_bg_color
         self.text_multi_frame = text_multi_frame
         self.note_frame = note_frame
-
-        # image notizen
-        notizen_icon = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'images/notizen.png')
-        notizen_icon_dark = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'images/notizen_dark.png')
-        self.notizen_icon = ctk.CTkImage(
-            light_image=Image.open(notizen_icon),
-            dark_image=Image.open(notizen_icon_dark),
-            size=(30, 30))
-
-        # image übersetzer
-        translator_icon = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'images/übersetzer.png')
-        translator_icon_dark = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'images/übersetzer_dark.png')
-        self.translator_icon = ctk.CTkImage(
-            light_image=Image.open(translator_icon),
-            dark_image=Image.open(translator_icon_dark),
-            size=(30, 30))
+        self.notizen_icon = notizen_icon
+        self.translator_icon = translator_icon
 
         # place widgets
         self.create_top_menu_widgets()
@@ -172,7 +192,7 @@ class TopSeparator(ctk.CTkFrame):
 
 
 class Notes(ctk.CTkFrame):
-    def __init__(self, parent, notes_font, frame_bg_color, button_color_hover):
+    def __init__(self, parent, notes_font, frame_bg_color, button_color_hover, add_button_image):
         super().__init__(parent, fg_color=frame_bg_color)
         self.pack(expand=True, fill="both")
 
@@ -182,7 +202,7 @@ class Notes(ctk.CTkFrame):
         self.notes_file = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'notizen.txt')
 
         # Frames
-        EntryFrame(self, self.add_task, self.entry_str, frame_bg_color, button_color_hover)
+        EntryFrame(self, self.add_task, self.entry_str, frame_bg_color, button_color_hover, add_button_image)
         self.tasks_frame = TasksFrame(self, self.delete_task, notes_font, frame_bg_color)
         self.read_notes_text_at_start()
 
@@ -234,29 +254,26 @@ class Notes(ctk.CTkFrame):
 
 
 class TextMulti(ctk.CTkFrame):
-    def __init__(self, parent, button_font_small, textbox_font, button_color_hover, frame_bg_color):
+    def __init__(self, parent, button_font_small, textbox_font, button_color_hover, frame_bg_color, frame_bg_color_invert, button_font_color, copy_image, image2text):
         super().__init__(parent, fg_color=frame_bg_color, corner_radius=0)
         self.pack(expand=True, fill="both")
 
-        # font
+        # font Eingaben
         self.button_font_small = button_font_small
         self.textbox_font = textbox_font
 
-        # color
+        # color Eingaben
         self.button_color = frame_bg_color
         self.button_color_hover = button_color_hover
-        self.button_font_color = ("#2c2c2c", "#5e5e5e")
+        self.button_font_color = button_font_color
         self.frame_bg_color = frame_bg_color
+        self.frame_bg_color_invert = frame_bg_color_invert
+        
+        # image Eingaben
+        self.copy_image = copy_image
+        self.image2text = image2text
 
-        # images
-        copy_icon = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'images/copy_light.png')
-        copy_icon_dark = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'images/copy_dark.png')
-        self.copy_image = ctk.CTkImage(light_image=Image.open(copy_icon), dark_image=Image.open(copy_icon_dark), size=(15, 15))
-        image_icon = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'images/image2text_light.png')
-        image_icon_dark = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'images/image2text_dark.png')
-        self.image2text = ctk.CTkImage(light_image=Image.open(image_icon), dark_image=Image.open(image_icon_dark))
-
-        # define grid
+        # grid definieren
         self.columnconfigure((0, 1), weight=1, uniform="a")
         self.rowconfigure(0, weight=1, uniform="b")
         self.rowconfigure(1, weight=1, uniform="b")
@@ -313,14 +330,14 @@ class TextMulti(ctk.CTkFrame):
             height=300,
             font=self.textbox_font,
             fg_color=self.frame_bg_color,
-            bg_color=("#191919", "#f3f3f3"),
+            bg_color=self.frame_bg_color_invert,
             column=0,
             columnspan=2,
             row=2,
             sticky="nsew",
             pady=0,
             padx=0,
-            text_color=("#191919", "#f3f3f3")
+            text_color=self.frame_bg_color_invert
         )
 
         self.copy_button = Button(

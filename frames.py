@@ -1,13 +1,11 @@
 import customtkinter as ctk
 from buttons import*
 from text_entry import *
-import os
-from PIL import Image
 
 
 # beinhaltet das Entry Feld und den hinzufügen Button
 class EntryFrame(ctk.CTkFrame):
-    def __init__(self, parent, add_task, entry_string, frame_bg_color, button_color_hover):
+    def __init__(self, parent, add_task, entry_string, frame_bg_color, button_color_hover, add_button_image):
         super().__init__(parent, corner_radius=0, fg_color=frame_bg_color)
         self.pack(fill="x")
         
@@ -16,22 +14,16 @@ class EntryFrame(ctk.CTkFrame):
         self.entry_string = entry_string
         self.frame_bg_color = frame_bg_color
         self.button_color_hover = button_color_hover
-        
-        add_icon = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'images/add_button.png')
-        add_icon_light = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'images/add_button_light.png')
-        self.add_button_image = ctk.CTkImage(light_image=Image.open(add_icon_light), dark_image=Image.open(add_icon))
+        self.add_button_image = add_button_image
         
         self.create_widgets()
 
     def create_widgets(self):
         # Entry zum Eingeben der Aufgaben
         EntryFieldPack(self, self.entry_string, 5, 1, 200, "left", 10, 5)
-        #entry = ctk.CTkEntry(self, textvariable=self.entry_string, corner_radius=5, border_width=1, width=200)
-        #entry.pack(side="left", padx=10, pady=5)
         
-        # Button zum Hinzufügen der Aufgaben - führt beim klicken die Methode
-        # add_task aus welche in der Klasse Notes deklariert und beim Aufruf
-        # an die EntryFrame Klasse übergeben wird
+        # Button zum Hinzufügen der Aufgaben - führt beim klicken die Methode add_task aus welche in
+        # der Klasse Notes deklariert und beim Aufruf an die EntryFrame Klasse übergeben wird
         ButtonPack(self, 20, 20, self.frame_bg_color, self.button_color_hover, self.add_task, "", 0, anchor=None, side="left", image=self.add_button_image)
 
 
@@ -42,15 +34,16 @@ class TasksFrame(ctk.CTkScrollableFrame):
         super().__init__(parent, corner_radius=0, fg_color=frame_bg_color)
         self.pack(fill="both", expand=True)
 
+        # grid definieren
         self.columnconfigure(0, weight=1, uniform="a")
         
+        # Eingaben
         self.frame_bg_color = frame_bg_color
         self.delete_task = delete_task
         self.notes_font = notes_font
 
-    # wird vom hinzufügen button getriggert
-    # erstellt für jeden neuen task_list Eintrag ein Frame, welches
-    # ein label mit dem listen Eintrag und zwei buttons enthält
+    # wird vom hinzufügen button getriggert erstellt für jeden neuen task_list Eintrag ein Frame,
+    # welches ein label mit dem listen Eintrag und zwei buttons enthält
     def update_tasks(self, new_task, count):
         if new_task:
             
