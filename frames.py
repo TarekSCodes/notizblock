@@ -1,22 +1,37 @@
 import customtkinter as ctk
 from buttons import*
 from text_entry import *
+import os
+from PIL import Image
 
 # TODO CTkEntry Klasse erstellen und entry in der EntryFrame Klasse dadurch ersetzen
 # beinhaltet das Entry Feld und den hinzufügen Button
 class EntryFrame(ctk.CTkFrame):
-    def __init__(self, parent, add_task, entry_string, frame_bg_color):
+    def __init__(self, parent, add_task, entry_string, frame_bg_color, button_color_hover):
         super().__init__(parent, corner_radius=0, fg_color=frame_bg_color)
         self.pack(fill="x")
+        
+        # Eingaben
+        self.add_task = add_task
+        self.entry_string = entry_string
+        self.frame_bg_color = frame_bg_color
+        self.button_color_hover = button_color_hover
+        
+        add_icon = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'images/add_button.png')
+        add_icon_light = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'images/add_button_light.png')
+        self.add_button_image = ctk.CTkImage(light_image=Image.open(add_icon_light), dark_image=Image.open(add_icon))
+        
+        self.create_widgets()
 
+    def create_widgets(self):
         # Entry zum Eingeben der Aufgaben
-        entry = ctk.CTkEntry(self, textvariable=entry_string, corner_radius=5, border_width=1, width=200)
+        entry = ctk.CTkEntry(self, textvariable=self.entry_string, corner_radius=5, border_width=1, width=200)
         entry.pack(side="left", padx=10, pady=5)
-
+        
         # Button zum Hinzufügen der Aufgaben - führt beim klicken die Methode
         # add_task aus welche in der Klasse Notes deklariert und beim Aufruf
         # an die EntryFrame Klasse übergeben wird
-        ButtonPack(self, 20, 20, "blue", "red", add_task, "+", 0, anchor=None, side="left")
+        ButtonPack(self, 20, 20, self.frame_bg_color, self.button_color_hover, self.add_task, "", 0, anchor=None, side="left", image=self.add_button_image)
 
 
 # Klasse zum Hinzufügen von neuen Notizzetteln

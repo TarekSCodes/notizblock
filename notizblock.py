@@ -32,6 +32,7 @@ class App(ctk.CTk):
         self.setup_window(title, size, is_dark)  # Window Setup
         self.setup_fonts()
         self.setup_colors()
+        #self.setup_images()
         self.setup_frames()
 
         self.mainloop()
@@ -58,8 +59,11 @@ class App(ctk.CTk):
         self.button_color_hover = ("#dadada", "#2c2c2c")
         self.frame_bg_color = ("#f3f3f3", "#191919")
 
+    #def setup_images(self):
+    #    self.add_button_image = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'images/add-button.png')    
+        
     def setup_frames(self):
-        self.note_frame = Notes(self, self.notes_font, self.frame_bg_color)
+        self.note_frame = Notes(self, self.notes_font, self.frame_bg_color, self.button_color_hover)
         self.note_frame.pack_forget()
         self.text_multi_frame = TextMulti(self, self.button_font_small, self.textbox_font, self.button_color_hover, self.frame_bg_color)
         self.text_multi_frame.pack_forget()
@@ -168,7 +172,7 @@ class TopSeparator(ctk.CTkFrame):
 
 
 class Notes(ctk.CTkFrame):
-    def __init__(self, parent, notes_font, frame_bg_color):
+    def __init__(self, parent, notes_font, frame_bg_color, button_color_hover):
         super().__init__(parent, fg_color=frame_bg_color)
         self.pack(expand=True, fill="both")
 
@@ -178,7 +182,7 @@ class Notes(ctk.CTkFrame):
         self.notes_file = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'notizen.txt')
 
         # Frames
-        EntryFrame(self, self.add_task, self.entry_str, frame_bg_color)
+        EntryFrame(self, self.add_task, self.entry_str, frame_bg_color, button_color_hover)
         self.tasks_frame = TasksFrame(self, self.delete_task, notes_font, frame_bg_color)
         self.read_notes_text_at_start()
 
@@ -247,15 +251,10 @@ class TextMulti(ctk.CTkFrame):
         # images
         copy_icon = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'images/copy_light.png')
         copy_icon_dark = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'images/copy_dark.png')
-        self.copy_image = ctk.CTkImage(
-            light_image=Image.open(copy_icon),
-            dark_image=Image.open(copy_icon_dark),
-            size=(15, 15))
+        self.copy_image = ctk.CTkImage(light_image=Image.open(copy_icon), dark_image=Image.open(copy_icon_dark), size=(15, 15))
         image_icon = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'images/image2text_light.png')
         image_icon_dark = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'images/image2text_dark.png')
-        self.image2text = ctk.CTkImage(
-            light_image=Image.open(image_icon),
-            dark_image=Image.open(image_icon_dark))
+        self.image2text = ctk.CTkImage(light_image=Image.open(image_icon), dark_image=Image.open(image_icon_dark))
 
         # define grid
         self.columnconfigure((0, 1), weight=1, uniform="a")

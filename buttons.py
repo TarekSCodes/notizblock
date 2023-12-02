@@ -54,7 +54,7 @@ class CheckButton(ctk.CTkCheckBox):
 
 
 class ButtonPack(ctk.CTkButton):
-    def __init__(self, parent, width, height, fg_color, hover_color, func, text, pady, anchor=None, side=None):
+    def __init__(self, parent, width, height, fg_color, hover_color, func, text, pady, anchor=None, side=None, image=None):
         super().__init__(
             master=parent,
             width=width,
@@ -62,6 +62,7 @@ class ButtonPack(ctk.CTkButton):
             fg_color=fg_color,
             hover_color=hover_color,
             command=func,
-            text=text
+            text=text,
+            image=image
         )
         self.pack(pady=pady, anchor=anchor, side=side)
