@@ -2,7 +2,7 @@ import customtkinter as ctk
 from buttons import*
 from text_entry import *
 
-
+# TODO CTkEntry Klasse erstellen und entry in der EntryFrame Klasse dadurch ersetzen
 # beinhaltet das Entry Feld und den hinzufügen Button
 class EntryFrame(ctk.CTkFrame):
     def __init__(self, parent, add_task, entry_string, frame_bg_color):

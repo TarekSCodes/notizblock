@@ -1,6 +1,4 @@
 import customtkinter as ctk
-from customtkinter.windows.widgets.font import CTkFont
-from customtkinter.windows.widgets.image import CTkImage
 
 
 # Buttons des Hauptmenüs

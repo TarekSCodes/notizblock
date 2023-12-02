@@ -18,10 +18,12 @@ try:
 except:
     pass
 
-# Todo
+# TODO
 #  - eingabe feld zum text übersetzen
 #  - pytesseract Dateipfad os.path.join verwenden
 #  - Status des Erledigt Buttons mit abspeichern
+#  - images in einen eigenen Ordner verschieben, für mehr Ordnung
+#  - Dateipfade der images anpassen
 
 class App(ctk.CTk):
     def __init__(self, title, size, is_dark):
@@ -101,16 +103,16 @@ class TopMenu(ctk.CTkFrame):
         self.note_frame = note_frame
 
         # image notizen
-        notizen_icon = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'notizen.png')
-        notizen_icon_dark = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'notizen_dark.png')
+        notizen_icon = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'images/notizen.png')
+        notizen_icon_dark = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'images/notizen_dark.png')
         self.notizen_icon = ctk.CTkImage(
             light_image=Image.open(notizen_icon),
             dark_image=Image.open(notizen_icon_dark),
             size=(30, 30))
 
         # image übersetzer
-        translator_icon = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'übersetzer.png')
-        translator_icon_dark = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'übersetzer_dark.png')
+        translator_icon = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'images/übersetzer.png')
+        translator_icon_dark = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'images/übersetzer_dark.png')
         self.translator_icon = ctk.CTkImage(
             light_image=Image.open(translator_icon),
             dark_image=Image.open(translator_icon_dark),
@@ -243,14 +245,14 @@ class TextMulti(ctk.CTkFrame):
         self.frame_bg_color = frame_bg_color
 
         # images
-        copy_icon = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'copy_light.png')
-        copy_icon_dark = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'copy_dark.png')
+        copy_icon = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'images/copy_light.png')
+        copy_icon_dark = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'images/copy_dark.png')
         self.copy_image = ctk.CTkImage(
             light_image=Image.open(copy_icon),
             dark_image=Image.open(copy_icon_dark),
             size=(15, 15))
-        image_icon = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'image2text_light.png')
-        image_icon_dark = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'image2text_dark.png')
+        image_icon = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'images/image2text_light.png')
+        image_icon_dark = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'images/image2text_dark.png')
         self.image2text = ctk.CTkImage(
             light_image=Image.open(image_icon),
             dark_image=Image.open(image_icon_dark))
