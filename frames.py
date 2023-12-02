@@ -4,7 +4,7 @@ from text_entry import *
 import os
 from PIL import Image
 
-# TODO CTkEntry Klasse erstellen und entry in der EntryFrame Klasse dadurch ersetzen
+
 # beinhaltet das Entry Feld und den hinzufügen Button
 class EntryFrame(ctk.CTkFrame):
     def __init__(self, parent, add_task, entry_string, frame_bg_color, button_color_hover):
@@ -25,8 +25,9 @@ class EntryFrame(ctk.CTkFrame):
 
     def create_widgets(self):
         # Entry zum Eingeben der Aufgaben
-        entry = ctk.CTkEntry(self, textvariable=self.entry_string, corner_radius=5, border_width=1, width=200)
-        entry.pack(side="left", padx=10, pady=5)
+        EntryFieldPack(self, self.entry_string, 5, 1, 200, "left", 10, 5)
+        #entry = ctk.CTkEntry(self, textvariable=self.entry_string, corner_radius=5, border_width=1, width=200)
+        #entry.pack(side="left", padx=10, pady=5)
         
         # Button zum Hinzufügen der Aufgaben - führt beim klicken die Methode
         # add_task aus welche in der Klasse Notes deklariert und beim Aufruf

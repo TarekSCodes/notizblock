@@ -12,3 +12,15 @@ class TextboxGrid(ctk.CTkTextbox):
             text_color=text_color
             )
         self.grid(column=column, columnspan=columnspan, row=row, sticky=sticky, pady=pady, padx=padx)
+
+
+class EntryFieldPack(ctk.CTkEntry):
+    def __init__(self, parent, textvariable, corner_radius, border_width, width, side, padx, pady):
+        super().__init__(
+            master=parent,
+            textvariable=textvariable,
+            corner_radius=corner_radius,
+            border_width=border_width,
+            width=width
+            )
+        self.pack(side=side, padx=padx, pady=pady)
