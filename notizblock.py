@@ -19,9 +19,10 @@ except:
     pass
 
 # TODO
-#  - eingabe feld zum text übersetzen
 #  - pytesseract Dateipfad os.path.join verwenden
 #  - Status des Erledigt Buttons mit abspeichern
+#  - am Fuß von textmulti auswahl buttons hizufügen - de,spa,eng - oder funktion
+#  - jenachdem welche sprache ausgewählt ist wird die zielsprache der übersetzung geändert
 
 class App(ctk.CTk):
     def __init__(self, title, size, is_dark):
@@ -37,7 +38,7 @@ class App(ctk.CTk):
 
     def setup_window(self, title, size, is_dark):
         self.title(title)
-        icon_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'hamster.ico')
+        icon_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'images/hamster.ico')
         self.iconbitmap(icon_path)
         self.geometry(f"{size[0]}x{size[1]}")
         self.attributes("-topmost", True)
@@ -97,7 +98,8 @@ class App(ctk.CTk):
             self.frame_bg_color_invert,
             self.button_font_color,
             self.copy_image,
-            self.image2text
+            self.image2text,
+            self.add_button_image
             )
         self.text_multi_frame.pack_forget()
         TopMenu(self, self.button_font, self.button_color_hover,
@@ -202,7 +204,7 @@ class Notes(ctk.CTkFrame):
         self.notes_file = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'notizen.txt')
 
         # Frames
-        EntryFrame(self, self.add_task, self.entry_str, frame_bg_color, button_color_hover, add_button_image)
+        EntryFrame(self,self.add_task, self.entry_str, frame_bg_color, button_color_hover, add_button_image)
         self.tasks_frame = TasksFrame(self, self.delete_task, notes_font, frame_bg_color)
         self.read_notes_text_at_start()
 
@@ -254,10 +256,12 @@ class Notes(ctk.CTkFrame):
 
 
 class TextMulti(ctk.CTkFrame):
-    def __init__(self, parent, button_font_small, textbox_font, button_color_hover, frame_bg_color, frame_bg_color_invert, button_font_color, copy_image, image2text):
+    def __init__(self, parent, button_font_small, textbox_font, button_color_hover, frame_bg_color, frame_bg_color_invert, button_font_color, copy_image, image2text, add_button_image):
         super().__init__(parent, fg_color=frame_bg_color, corner_radius=0)
         self.pack(expand=True, fill="both")
 
+        self.entry_str = ctk.StringVar(value="")
+        
         # font Eingaben
         self.button_font_small = button_font_small
         self.textbox_font = textbox_font
@@ -272,25 +276,32 @@ class TextMulti(ctk.CTkFrame):
         # image Eingaben
         self.copy_image = copy_image
         self.image2text = image2text
+        self.add_button_image = add_button_image
 
         # grid definieren
         self.columnconfigure((0, 1), weight=1, uniform="a")
         self.rowconfigure(0, weight=1, uniform="b")
         self.rowconfigure(1, weight=1, uniform="b")
-        self.rowconfigure(2, weight=100, uniform="c")
+        self.rowconfigure(2, weight=1, uniform="b")
+        self.rowconfigure(3, weight=100, uniform="c")
 
         self.create_widgets()
 
         self.translator = Translator()
 
     def create_widgets(self):
+        
+        test = EntryFrame(self,self.translate_text, self.entry_str, self.frame_bg_color, self.button_color_hover, self.add_button_image)
+        test.pack_forget()
+        test.grid(column=0, columnspan=2, row=0, sticky="w", padx=0, pady=0)
+        
         # übersetzen button
         Button(
             parent=self,
             text="Übersetzen",
             func=self.translate_text,
             col=0,
-            row=0,
+            row=1,
             fg_color=self.button_color,
             hover_color=self.button_color_hover,
             text_color=self.button_font_color,
@@ -303,7 +314,7 @@ class TextMulti(ctk.CTkFrame):
             text="Leeren",
             func=self.empty_box,
             col=1,
-            row=0,
+            row=1,
             fg_color=self.button_color,
             hover_color=self.button_color_hover,
             text_color=self.button_font_color,
@@ -316,7 +327,7 @@ class TextMulti(ctk.CTkFrame):
             text="",
             func=self.imagefunk,
             col=1,
-            row=1,
+            row=2,
             fg_color=self.button_color,
             hover_color=self.button_color_hover,
             text_color=self.button_font_color,
@@ -333,7 +344,7 @@ class TextMulti(ctk.CTkFrame):
             bg_color=self.frame_bg_color_invert,
             column=0,
             columnspan=2,
-            row=2,
+            row=3,
             sticky="nsew",
             pady=0,
             padx=0,
@@ -345,7 +356,7 @@ class TextMulti(ctk.CTkFrame):
             text="",
             func=self.copy_clipboard,
             col=0,
-            row=1,
+            row=2,
             fg_color=self.button_color,
             hover_color=self.button_color_hover,
             text_color=self.button_font_color,
@@ -356,7 +367,12 @@ class TextMulti(ctk.CTkFrame):
 
     def translate_text(self):
         self.textbox.delete("1.0", tk.END)
-        result = self.translator.translate(pyperclip.waitForPaste(), dest="de").text
+        if self.entry_str.get():
+            result = self.translator.translate(self.entry_str.get(), dest="de").text
+        elif pyperclip.waitForPaste():
+            result = self.translator.translate(pyperclip.waitForPaste(), dest="de").text
+        else:
+            result = "Kein Text zum Übersetzen gefunden"
         self.textbox.insert(tk.END, result)
         self.copy_button.configure(state=ctk.NORMAL)
 

@@ -35,7 +35,7 @@ class Button(ctk.CTkButton):
             state=state,
             image=image
         )
-        self.grid(column=col, row=row, sticky="nsew")
+        self.grid(column=col, row=row, sticky="ew")
         
 
 class CheckButton(ctk.CTkCheckBox):

@@ -5,12 +5,12 @@ from text_entry import *
 
 # beinhaltet das Entry Feld und den hinzufügen Button
 class EntryFrame(ctk.CTkFrame):
-    def __init__(self, parent, add_task, entry_string, frame_bg_color, button_color_hover, add_button_image):
+    def __init__(self, parent, func, entry_string, frame_bg_color, button_color_hover, add_button_image):
         super().__init__(parent, corner_radius=0, fg_color=frame_bg_color)
         self.pack(fill="x")
         
         # Eingaben
-        self.add_task = add_task
+        self.command = func
         self.entry_string = entry_string
         self.frame_bg_color = frame_bg_color
         self.button_color_hover = button_color_hover
@@ -24,7 +24,7 @@ class EntryFrame(ctk.CTkFrame):
         
         # Button zum Hinzufügen der Aufgaben - führt beim klicken die Methode add_task aus welche in
         # der Klasse Notes deklariert und beim Aufruf an die EntryFrame Klasse übergeben wird
-        ButtonPack(self, 20, 20, self.frame_bg_color, self.button_color_hover, self.add_task, "", 0, anchor=None, side="left", image=self.add_button_image)
+        ButtonPack(self, 20, 20, self.frame_bg_color, self.button_color_hover, self.command, "", 0, anchor=None, side="left", image=self.add_button_image)
 
 
 # Klasse zum Hinzufügen von neuen Notizzetteln
