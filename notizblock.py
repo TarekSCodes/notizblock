@@ -11,7 +11,9 @@ import pytesseract
 from text_entry import *
 import tkinter as tk
 from tkinter.filedialog import askopenfilename
-pytesseract.pytesseract.tesseract_cmd = r'C:\Program Files\Tesseract-OCR\tesseract.exe'
+
+tesseract_path = os.path.join(os.environ['ProgramFiles'], 'Tesseract-OCR', 'tesseract.exe')
+pytesseract.pytesseract.tesseract_cmd = tesseract_path
 
 try:
     from ctypes import windll, byref, sizeof, c_int
@@ -19,10 +21,12 @@ except:
     pass
 
 # TODO
-#  - pytesseract Dateipfad os.path.join verwenden
-#  - Status des Erledigt Buttons mit abspeichern
-#  - am Fuß von textmulti auswahl buttons hizufügen - de,spa,eng - oder funktion
-#  - jenachdem welche sprache ausgewählt ist wird die zielsprache der übersetzung geändert
+#  1. Status des Erledigt Buttons mit abspeichern
+#  2. am Fuß von textmulti auswahl buttons hizufügen - de,spa,eng - oder funktion
+#     jenachdem welche sprache ausgewählt ist wird die zielsprache der übersetzung geändert
+#  3. veränderten Inhalt der Notizen in der notizen.txt anpassen
+#  4. integration von chat gpt
+#  5. Wetter Api integrieren
 
 class App(ctk.CTk):
     def __init__(self, title, size, is_dark):
@@ -86,8 +90,12 @@ class App(ctk.CTk):
         translator_icon_dark = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'images/übersetzer_dark.png')
         self.translator_icon = ctk.CTkImage(light_image=Image.open(translator_icon), dark_image=Image.open(translator_icon_dark), size=(30, 30))
         
+        # image zum entfernen einzelner Notizen
+        delete_icon = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'images/delete_button.png')
+        self.delete_button_image = ctk.CTkImage(light_image=Image.open(delete_icon), dark_image=Image.open(delete_icon), size=(12, 12))
+        
     def setup_frames(self):
-        self.note_frame = Notes(self, self.notes_font, self.frame_bg_color, self.button_color_hover, self.add_button_image)
+        self.note_frame = Notes(self, self.notes_font, self.frame_bg_color, self.button_color_hover, self.add_button_image, self.delete_button_image)
         self.note_frame.pack_forget()
         self.text_multi_frame = TextMulti(
             self,
@@ -194,7 +202,7 @@ class TopSeparator(ctk.CTkFrame):
 
 
 class Notes(ctk.CTkFrame):
-    def __init__(self, parent, notes_font, frame_bg_color, button_color_hover, add_button_image):
+    def __init__(self, parent, notes_font, frame_bg_color, button_color_hover, add_button_image, delete_button_image):
         super().__init__(parent, fg_color=frame_bg_color)
         self.pack(expand=True, fill="both")
 
@@ -205,7 +213,7 @@ class Notes(ctk.CTkFrame):
 
         # Frames
         EntryFrame(self,self.add_task, self.entry_str, frame_bg_color, button_color_hover, add_button_image)
-        self.tasks_frame = TasksFrame(self, self.delete_task, notes_font, frame_bg_color)
+        self.tasks_frame = TasksFrame(self, self.delete_task, notes_font, frame_bg_color, delete_button_image)
         self.read_notes_text_at_start()
 
     def read_notes_text_at_start(self):
@@ -220,8 +228,6 @@ class Notes(ctk.CTkFrame):
                 self.tasks_frame.update_tasks(i.strip(), self.count)
                 self.count += 1  # wird erhöht damit die Notizen in verschiedenen rows erstellt werden
 
-# Todo hier in der Methode add_task muss eine Datei geöffnet werden und die neue
-#  Notiz darin gespeichert werden - Inhalt: String-Status
     def add_task(self):
         # Beim Klicken auf den entry_button wird diese Methode ausgeführt
         new_task = self.entry_str.get()  # Der Inhalt des Entry feldes wird ausgelesen
@@ -367,10 +373,13 @@ class TextMulti(ctk.CTkFrame):
 
     def translate_text(self):
         self.textbox.delete("1.0", tk.END)
+        
+        # prüfen ob entry feld nicht leer ist, wenn wahr dann wird der inhalt übersetzt
+        # wenn unwahr wird die zwischenablage geprüft
         if self.entry_str.get():
             result = self.translator.translate(self.entry_str.get(), dest="de").text
-        elif pyperclip.waitForPaste():
-            result = self.translator.translate(pyperclip.waitForPaste(), dest="de").text
+        elif self.clipboard_get():
+            result = self.translator.translate(self.clipboard_get(), dest="de").text
         else:
             result = "Kein Text zum Übersetzen gefunden"
         self.textbox.insert(tk.END, result)
@@ -379,6 +388,7 @@ class TextMulti(ctk.CTkFrame):
     def empty_box(self):
         self.textbox.delete("1.0", tk.END)
         self.copy_button.configure(state=ctk.DISABLED)
+        self.entry_str.set("")
 
     def copy_clipboard(self):
         pyperclip.copy(self.textbox.get("1.0", tk.END))
