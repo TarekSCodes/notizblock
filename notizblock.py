@@ -21,12 +21,10 @@ except:
     pass
 
 # TODO
-#  1. Status des Erledigt Buttons mit abspeichern
-#  2. am Fuß von textmulti auswahl buttons hizufügen - de,spa,eng - oder funktion
-#     jenachdem welche sprache ausgewählt ist wird die zielsprache der übersetzung geändert
 #  3. veränderten Inhalt der Notizen in der notizen.txt anpassen
 #  4. integration von chat gpt
 #  5. Wetter Api integrieren
+#  6. App immer in der Mitte des Bildschirmes öffnen lassen 
 
 class App(ctk.CTk):
     def __init__(self, title, size, is_dark):
@@ -267,6 +265,7 @@ class TextMulti(ctk.CTkFrame):
         self.pack(expand=True, fill="both")
 
         self.entry_str = ctk.StringVar(value="")
+        self.target_language = ctk.StringVar(value="deutsch")
         
         # font Eingaben
         self.button_font_small = button_font_small
@@ -290,6 +289,7 @@ class TextMulti(ctk.CTkFrame):
         self.rowconfigure(1, weight=1, uniform="b")
         self.rowconfigure(2, weight=1, uniform="b")
         self.rowconfigure(3, weight=100, uniform="c")
+        self.rowconfigure(4, weight=1, uniform="b")
 
         self.create_widgets()
 
@@ -340,6 +340,20 @@ class TextMulti(ctk.CTkFrame):
             font=self.button_font_small,
             image=self.image2text
         )
+        
+        self.copy_button = Button(
+            parent=self,
+            text="",
+            func=self.copy_clipboard,
+            col=0,
+            row=2,
+            fg_color=self.button_color,
+            hover_color=self.button_color_hover,
+            text_color=self.button_font_color,
+            font=self.button_font_small,
+            state=ctk.DISABLED,
+            image=self.copy_image
+        )
 
         self.textbox = TextboxGrid(
             parent=self,
@@ -356,30 +370,44 @@ class TextMulti(ctk.CTkFrame):
             padx=0,
             text_color=self.frame_bg_color_invert
         )
-
-        self.copy_button = Button(
+        
+        ChoiceBox(
             parent=self,
-            text="",
-            func=self.copy_clipboard,
-            col=0,
-            row=2,
-            fg_color=self.button_color,
-            hover_color=self.button_color_hover,
-            text_color=self.button_font_color,
+            column=0,
+            columnspan=1,
+            row=4,
+            fg_color=self.frame_bg_color,
+            border_width=1,
+            values=["deutsch", "englisch", "spanisch"],
             font=self.button_font_small,
-            state=ctk.DISABLED,
-            image=self.copy_image
+            width=80,
+            height=20,
+            sticky="w",
+            padx=10,
+            dropdown_fg_color=self.frame_bg_color,
+            text_color=self.button_font_color,
+            dropdown_font=self.button_font_small,
+            variable=self.target_language
         )
 
     def translate_text(self):
         self.textbox.delete("1.0", tk.END)
         
+        # prüfen welche Zielsprache ausgewählt ist und diese an den translator weitergeben
+        current_language = ""
+        if self.target_language.get() == "deutsch":
+            current_language = "de"
+        elif self.target_language.get() == "englisch":
+            current_language = "en"
+        else:
+            current_language = "es"
+            
         # prüfen ob entry feld nicht leer ist, wenn wahr dann wird der inhalt übersetzt
         # wenn unwahr wird die zwischenablage geprüft
         if self.entry_str.get():
-            result = self.translator.translate(self.entry_str.get(), dest="de").text
+            result = self.translator.translate(self.entry_str.get(), dest=current_language).text
         elif self.clipboard_get():
-            result = self.translator.translate(self.clipboard_get(), dest="de").text
+            result = self.translator.translate(self.clipboard_get(), dest=current_language).text
         else:
             result = "Kein Text zum Übersetzen gefunden"
         self.textbox.insert(tk.END, result)
@@ -404,6 +432,9 @@ class TextMulti(ctk.CTkFrame):
             self.copy_button.configure(state=ctk.NORMAL)
             pyperclip.copy(self.textbox.get("1.0", tk.END))
 
+   # def getlang(self, choice):
+   #     print(choice)
+        
 
 if __name__ == "__main__":
     App("", (300, 450), darkdetect.isDark())

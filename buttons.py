@@ -1,4 +1,7 @@
+import tkinter
+from typing import Callable, List, Optional, Tuple, Union
 import customtkinter as ctk
+from customtkinter.windows.widgets.font import CTkFont
 
 
 # Buttons des Hauptmenüs
@@ -83,3 +86,21 @@ class ButtonPlace(ctk.CTkButton):
             image=image
         )
         self.place(rely=rely, relx=relx, anchor=anchor)
+
+
+class ChoiceBox(ctk.CTkComboBox):
+    def __init__(self, parent, column, columnspan, row, fg_color, border_width, values, font, width, height, sticky, padx, dropdown_fg_color, text_color, dropdown_font, variable):
+        super().__init__(
+            master=parent,
+            fg_color=fg_color,
+            border_width=border_width,
+            values=values,
+            font=font,
+            width=width,
+            height=height,
+            dropdown_fg_color=dropdown_fg_color,
+            text_color=text_color,
+            dropdown_font=dropdown_font,
+            variable=variable
+        )
+        self.grid(column=column, columnspan=columnspan, row=row, sticky=sticky, padx=padx)

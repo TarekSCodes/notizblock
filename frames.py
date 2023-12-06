@@ -25,8 +25,7 @@ class EntryFrame(ctk.CTkFrame):
         # Button zum Hinzufügen der Aufgaben - führt beim klicken die Methode add_task aus welche in
         # der Klasse Notes deklariert und beim Aufruf an die EntryFrame Klasse übergeben wird
         ButtonPack(self, 20, 20, self.frame_bg_color, self.button_color_hover, self.command, 5, "", 0, anchor=None, side="left", image=self.add_button_image)
-
-
+    
 # Klasse zum Hinzufügen von neuen Notizzetteln
 # dies ist das Parent Frame für alle Notizen unter dem Entry Feld
 class TasksFrame(ctk.CTkScrollableFrame):
