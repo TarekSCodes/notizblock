@@ -109,3 +109,39 @@ class NormalGridFrame(ctk.CTkFrame):
     def __init__(self, parent, corner_radius, fg_color, column, row, sticky):
         super().__init__(parent, corner_radius=corner_radius, fg_color=fg_color)
         self.grid(column=column, row=row, sticky=sticky)
+
+
+class NormalPackFrame(ctk.CTkFrame):
+    def __init__(self, parent, corner_radius, fg_color, fill, height, button_font_small, about_func):
+        super().__init__(
+            master=parent,
+            corner_radius=corner_radius,
+            fg_color=fg_color,
+            height=height
+        )
+        self.pack(fill=fill)
+        
+        # grid definieren
+        self.columnconfigure((0, 1), weight=1, uniform="a")
+        self.rowconfigure(0, weight=1, uniform="a")
+        
+        # Eingaben
+        self.button_font_small = button_font_small
+        self.frame_bg_color = fg_color
+        self.about_func = about_func
+        
+        self.create_widgets()
+        
+    def create_widgets(self):
+        Button(
+            parent=self,
+            text="About",
+            func=self.about_func,
+            col=1,
+            row=0,
+            fg_color=self.frame_bg_color,
+            hover_color=self.frame_bg_color,
+            text_color="grey",
+            font=self.button_font_small,
+            sticky="e"
+            )

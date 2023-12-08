@@ -21,7 +21,7 @@ class MainMenuButton(ctk.CTkButton):
 
 # Übersetzer Buttons
 class Button(ctk.CTkButton):
-    def __init__(self, parent, text, func, col, row, fg_color, hover_color, text_color, font, height=40, image=None, state=ctk.NORMAL, corner_radius=0):
+    def __init__(self, parent, text, func, col, row, fg_color, hover_color, text_color, font, height=40, image=None, state=ctk.NORMAL, corner_radius=0, sticky="ew"):
         super().__init__(
             master=parent,
             text=text,
@@ -35,7 +35,7 @@ class Button(ctk.CTkButton):
             image=image,
             height=height
         )
-        self.grid(column=col, row=row, sticky="ew")
+        self.grid(column=col, row=row, sticky=sticky)
         
 
 class CheckButton(ctk.CTkCheckBox):

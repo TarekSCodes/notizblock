@@ -24,7 +24,6 @@ except:
 #  3. veränderten Inhalt der Notizen in der notizen.txt anpassen
 #  4. integration von chat gpt
 #  5. Wetter Api integrieren
-#  6. App immer in der Mitte des Bildschirmes öffnen lassen 
 
 class App(ctk.CTk):
     def __init__(self, title, is_dark):
@@ -35,6 +34,8 @@ class App(ctk.CTk):
         self.setup_colors()
         self.setup_images()
         self.setup_frames()
+        
+        self.about_window = None
 
         self.mainloop()
 
@@ -57,7 +58,6 @@ class App(ctk.CTk):
         self.button_font = ctk.CTkFont("Calibri", 22, weight="bold")
         self.button_font_small = ctk.CTkFont("Calibri", 18, weight="bold")
         self.textbox_notes_font = ctk.CTkFont("calibre", 20)
-        #self.notes_font = ctk.CTkFont("calibre", 20)
 
     def setup_colors(self):
         # colors
@@ -100,8 +100,19 @@ class App(ctk.CTk):
         self.delete_button_image = ctk.CTkImage(light_image=Image.open(delete_icon), dark_image=Image.open(delete_icon), size=(15, 15))
         
     def setup_frames(self):
-        self.note_frame = Notes(self, self.textbox_notes_font, self.frame_bg_color, self.button_color_hover, self.add_button_image, self.delete_button_image)
+        self.note_frame = Notes(
+            self,
+            self.textbox_notes_font,
+            self.frame_bg_color,
+            self.button_color_hover,
+            self.add_button_image,
+            self.delete_button_image,
+            self.button_font_small,
+            self.button_font_color,
+            self.about_func
+        )
         self.note_frame.pack_forget()
+        
         self.text_multi_frame = TextMulti(
             self,
             self.button_font_small,
@@ -112,15 +123,28 @@ class App(ctk.CTk):
             self.button_font_color,
             self.copy_image,
             self.image2text,
-            self.add_button_image
+            self.add_button_image,
+            self.about_func
             )
         self.text_multi_frame.pack_forget()
+        
         TopMenu(self, self.button_font, self.button_color_hover,
                 self.button_font_small, self.textbox_notes_font,
                 self.text_multi_frame, self.note_frame, self.frame_bg_color,
                 self.notizen_icon, self.translator_icon)
+        
         TopSeparator(self)
+        
         self.note_frame.pack(expand=True, fill="both")
+
+    def about_func(self):
+        if self.about_window is None or not self.about_window.winfo_exists():
+            self.about_window = ctk.CTkToplevel(self)
+            self.about_window.title("About")
+            self.about_window.focus()
+            self.about_window.geometry("300x300")
+        else:
+            self.about_window.focus()
 
     # Funktion zum Ändern Titelleiste je nachdem ob ein dunkles oder helles Thema ausgewählt ist
     def title_bar_color(self, is_dark):
@@ -207,7 +231,7 @@ class TopSeparator(ctk.CTkFrame):
 
 
 class Notes(ctk.CTkFrame):
-    def __init__(self, parent, notes_font, frame_bg_color, button_color_hover, add_button_image, delete_button_image):
+    def __init__(self, parent, notes_font, frame_bg_color, button_color_hover, add_button_image, delete_button_image, button_font_small, button_font_color, about_func):
         super().__init__(parent, fg_color=frame_bg_color)
         self.pack(expand=True, fill="both")
 
@@ -215,12 +239,29 @@ class Notes(ctk.CTkFrame):
         self.entry_str = ctk.StringVar(value="")
         self.count = 0
         self.notes_file = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'notizen.txt')
+        
+        # Eingaben
+        self.button_font_small = button_font_small
+        self.notes_font = notes_font
+        self.frame_bg_color = frame_bg_color
+        self.button_color_hover = button_color_hover
+        self.add_button_image = add_button_image
+        self.delete_button_image = delete_button_image
+        self.button_font_small = button_font_small
+        self.button_font_color = button_font_color
+        self.about_func = about_func
 
         # Frames
-        EntryFrame(self,self.add_task, self.entry_str, frame_bg_color, button_color_hover, add_button_image, notes_font)
-        self.tasks_frame = TasksFrame(self, self.delete_task, notes_font, frame_bg_color, delete_button_image)
+        self.create_widgets()
+        
+        # Methode zum auslesen der notizen.txt Datei ausführen
         self.read_notes_text_at_start()
 
+    def create_widgets(self):
+        EntryFrame(self, self.add_task, self.entry_str, self.frame_bg_color, self.button_color_hover, self.add_button_image, self.notes_font)
+        self.tasks_frame = TasksFrame(self, self.delete_task, self.notes_font, self.frame_bg_color, self.delete_button_image)
+        NormalPackFrame(self, 0, self.frame_bg_color, "x", 50, self.button_font_small, self.about_func)
+    
     def read_notes_text_at_start(self):
         with open(self.notes_file, "r") as file:
             # Prüfe, ob die Datei nicht leer ist
@@ -267,7 +308,7 @@ class Notes(ctk.CTkFrame):
 
 
 class TextMulti(ctk.CTkFrame):
-    def __init__(self, parent, button_font_small, textbox_notes_font, button_color_hover, frame_bg_color, frame_bg_color_invert, button_font_color, copy_image, image2text, add_button_image):
+    def __init__(self, parent, button_font_small, textbox_notes_font, button_color_hover, frame_bg_color, frame_bg_color_invert, button_font_color, copy_image, image2text, add_button_image, about_func):
         super().__init__(parent, fg_color=frame_bg_color, corner_radius=0)
         self.pack(expand=True, fill="both")
 
@@ -289,6 +330,9 @@ class TextMulti(ctk.CTkFrame):
         self.copy_image = copy_image
         self.image2text = image2text
         self.add_button_image = add_button_image
+        
+        # func Eingaben
+        self.about_func = about_func
 
         # grid definieren
         self.columnconfigure((0, 1), weight=1, uniform="a")
@@ -368,7 +412,7 @@ class TextMulti(ctk.CTkFrame):
             height=300,
             font=self.textbox_notes_font,
             fg_color=self.frame_bg_color,
-            bg_color=self.frame_bg_color_invert,
+            bg_color=self.frame_bg_color,
             column=0,
             columnspan=2,
             row=3,
@@ -397,6 +441,19 @@ class TextMulti(ctk.CTkFrame):
             variable=self.target_language
         )
 
+        Button(
+            parent=self,
+            text="About",
+            func=self.about_func,
+            col=1,
+            row=4,
+            fg_color=self.frame_bg_color,
+            hover_color=self.frame_bg_color,
+            text_color="grey",
+            font=self.button_font_small,
+            sticky="es"
+            )
+        
     def translate_text(self):
         self.textbox.delete("1.0", tk.END)
         
