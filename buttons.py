@@ -1,7 +1,4 @@
-import tkinter
-from typing import Callable, List, Optional, Tuple, Union
 import customtkinter as ctk
-from customtkinter.windows.widgets.font import CTkFont
 
 
 # Buttons des Hauptmenüs
@@ -24,8 +21,7 @@ class MainMenuButton(ctk.CTkButton):
 
 # Übersetzer Buttons
 class Button(ctk.CTkButton):
-    def __init__(self, parent, text, func, col, row, fg_color, hover_color, text_color, font, image=None,
-                 state=ctk.NORMAL, corner_radius=0):
+    def __init__(self, parent, text, func, col, row, fg_color, hover_color, text_color, font, height=40, image=None, state=ctk.NORMAL, corner_radius=0):
         super().__init__(
             master=parent,
             text=text,
@@ -36,7 +32,8 @@ class Button(ctk.CTkButton):
             hover_color=hover_color,
             text_color=text_color,
             state=state,
-            image=image
+            image=image,
+            height=height
         )
         self.grid(column=col, row=row, sticky="ew")
         

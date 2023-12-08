@@ -27,10 +27,10 @@ except:
 #  6. App immer in der Mitte des Bildschirmes öffnen lassen 
 
 class App(ctk.CTk):
-    def __init__(self, title, size, is_dark):
+    def __init__(self, title, is_dark):
         super().__init__(fg_color=("#f3f3f3", "#191919"))
 
-        self.setup_window(title, size, is_dark)  # Window Setup
+        self.setup_window(title, is_dark)  # Window Setup
         self.setup_fonts()
         self.setup_colors()
         self.setup_images()
@@ -38,22 +38,26 @@ class App(ctk.CTk):
 
         self.mainloop()
 
-    def setup_window(self, title, size, is_dark):
+    def setup_window(self, title, is_dark):
         self.title(title)
         icon_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'images/hamster.ico')
         self.iconbitmap(icon_path)
-        self.geometry(f"{size[0]}x{size[1]}")
+        window_width = 400
+        window_height = 650
+        center_width = int((self.winfo_screenwidth() - window_width) / 2)
+        center_height = int((self.winfo_screenheight() - window_height) / 2)
+        self.geometry(f"{window_width}x{window_height}+{center_width}+{center_height}")
         self.attributes("-topmost", True)
-        self.minsize(258, 300)
+        self.minsize(400, 650)
         self.maxsize(500, 800)
         self.title_bar_color(is_dark)
 
     def setup_fonts(self):
         # fonts
-        self.button_font = ctk.CTkFont("Calibri", 15, weight="bold")
-        self.button_font_small = ctk.CTkFont("Calibri", 10, weight="bold")
-        self.textbox_font = ctk.CTkFont("calibre", 15, weight="bold")
-        self.notes_font = ctk.CTkFont("Arial", 15)
+        self.button_font = ctk.CTkFont("Calibri", 22, weight="bold")
+        self.button_font_small = ctk.CTkFont("Calibri", 18, weight="bold")
+        self.textbox_notes_font = ctk.CTkFont("calibre", 20)
+        #self.notes_font = ctk.CTkFont("calibre", 20)
 
     def setup_colors(self):
         # colors
@@ -63,42 +67,45 @@ class App(ctk.CTk):
         self.button_font_color = ("#2c2c2c", "#5e5e5e")
 
     def setup_images(self):
+        image25 = (25, 25)
+        image_size_topmenu = (35, 35)
+        
         # image des add buttons zum hinzufügen von Notizen
         add_icon = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'images/add_button.png')
         add_icon_light = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'images/add_button_light.png')
-        self.add_button_image = ctk.CTkImage(light_image=Image.open(add_icon_light), dark_image=Image.open(add_icon))
+        self.add_button_image = ctk.CTkImage(light_image=Image.open(add_icon_light), dark_image=Image.open(add_icon), size=(30, 30))
         
         # image des kopieren buttons welcher den übersetzten Text in die Zwischenablage kopiert
         copy_icon = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'images/copy_light.png')
         copy_icon_dark = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'images/copy_dark.png')
-        self.copy_image = ctk.CTkImage(light_image=Image.open(copy_icon), dark_image=Image.open(copy_icon_dark), size=(15, 15))
+        self.copy_image = ctk.CTkImage(light_image=Image.open(copy_icon), dark_image=Image.open(copy_icon_dark), size=image25)
         
         # image des image2text buttons
         image_icon = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'images/image2text_light.png')
         image_icon_dark = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'images/image2text_dark.png')
-        self.image2text = ctk.CTkImage(light_image=Image.open(image_icon), dark_image=Image.open(image_icon_dark))
+        self.image2text = ctk.CTkImage(light_image=Image.open(image_icon), dark_image=Image.open(image_icon_dark), size=image25)
         
         # image des Notizen Tabs im Hauptmenu
         notizen_icon = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'images/notizen.png')
         notizen_icon_dark = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'images/notizen_dark.png')
-        self.notizen_icon = ctk.CTkImage(light_image=Image.open(notizen_icon), dark_image=Image.open(notizen_icon_dark), size=(30, 30))
+        self.notizen_icon = ctk.CTkImage(light_image=Image.open(notizen_icon), dark_image=Image.open(notizen_icon_dark), size=image_size_topmenu)
 
         # image des Übersetzer Tabs im Hauptmenu
         translator_icon = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'images/übersetzer.png')
         translator_icon_dark = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'images/übersetzer_dark.png')
-        self.translator_icon = ctk.CTkImage(light_image=Image.open(translator_icon), dark_image=Image.open(translator_icon_dark), size=(30, 30))
+        self.translator_icon = ctk.CTkImage(light_image=Image.open(translator_icon), dark_image=Image.open(translator_icon_dark), size=image_size_topmenu)
         
         # image zum entfernen einzelner Notizen
         delete_icon = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'images/delete_button.png')
-        self.delete_button_image = ctk.CTkImage(light_image=Image.open(delete_icon), dark_image=Image.open(delete_icon), size=(12, 12))
+        self.delete_button_image = ctk.CTkImage(light_image=Image.open(delete_icon), dark_image=Image.open(delete_icon), size=(15, 15))
         
     def setup_frames(self):
-        self.note_frame = Notes(self, self.notes_font, self.frame_bg_color, self.button_color_hover, self.add_button_image, self.delete_button_image)
+        self.note_frame = Notes(self, self.textbox_notes_font, self.frame_bg_color, self.button_color_hover, self.add_button_image, self.delete_button_image)
         self.note_frame.pack_forget()
         self.text_multi_frame = TextMulti(
             self,
             self.button_font_small,
-            self.textbox_font,
+            self.textbox_notes_font,
             self.button_color_hover,
             self.frame_bg_color,
             self.frame_bg_color_invert,
@@ -109,7 +116,7 @@ class App(ctk.CTk):
             )
         self.text_multi_frame.pack_forget()
         TopMenu(self, self.button_font, self.button_color_hover,
-                self.button_font_small, self.textbox_font,
+                self.button_font_small, self.textbox_notes_font,
                 self.text_multi_frame, self.note_frame, self.frame_bg_color,
                 self.notizen_icon, self.translator_icon)
         TopSeparator(self)
@@ -131,7 +138,7 @@ class App(ctk.CTk):
 
 class TopMenu(ctk.CTkFrame):
     def __init__(self, parent, button_font, button_color_hover,
-                 button_font_small,textbox_font, text_multi_frame, note_frame, frame_bg_color, notizen_icon, translator_icon):
+                 button_font_small,textbox_notes_font, text_multi_frame, note_frame, frame_bg_color, notizen_icon, translator_icon):
         super().__init__(parent, fg_color=frame_bg_color, corner_radius=0)
         self.pack(fill="x", ipady=10)
 
@@ -142,7 +149,7 @@ class TopMenu(ctk.CTkFrame):
         # Eingaben aus der Hauptklasse (App)
         self.button_font = button_font
         self.button_font_small = button_font_small
-        self.textbox_font = textbox_font
+        self.textbox_notes_font = textbox_notes_font
         self.button_color_hover = button_color_hover
         self.frame_bg_color = frame_bg_color
         self.text_multi_frame = text_multi_frame
@@ -210,7 +217,7 @@ class Notes(ctk.CTkFrame):
         self.notes_file = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'notizen.txt')
 
         # Frames
-        EntryFrame(self,self.add_task, self.entry_str, frame_bg_color, button_color_hover, add_button_image)
+        EntryFrame(self,self.add_task, self.entry_str, frame_bg_color, button_color_hover, add_button_image, notes_font)
         self.tasks_frame = TasksFrame(self, self.delete_task, notes_font, frame_bg_color, delete_button_image)
         self.read_notes_text_at_start()
 
@@ -260,7 +267,7 @@ class Notes(ctk.CTkFrame):
 
 
 class TextMulti(ctk.CTkFrame):
-    def __init__(self, parent, button_font_small, textbox_font, button_color_hover, frame_bg_color, frame_bg_color_invert, button_font_color, copy_image, image2text, add_button_image):
+    def __init__(self, parent, button_font_small, textbox_notes_font, button_color_hover, frame_bg_color, frame_bg_color_invert, button_font_color, copy_image, image2text, add_button_image):
         super().__init__(parent, fg_color=frame_bg_color, corner_radius=0)
         self.pack(expand=True, fill="both")
 
@@ -269,7 +276,7 @@ class TextMulti(ctk.CTkFrame):
         
         # font Eingaben
         self.button_font_small = button_font_small
-        self.textbox_font = textbox_font
+        self.textbox_notes_font = textbox_notes_font
 
         # color Eingaben
         self.button_color = frame_bg_color
@@ -297,7 +304,7 @@ class TextMulti(ctk.CTkFrame):
 
     def create_widgets(self):
         
-        test = EntryFrame(self,self.translate_text, self.entry_str, self.frame_bg_color, self.button_color_hover, self.add_button_image)
+        test = EntryFrame(self,self.translate_text, self.entry_str, self.frame_bg_color, self.button_color_hover, self.add_button_image, self.textbox_notes_font)
         test.pack_forget()
         test.grid(column=0, columnspan=2, row=0, sticky="w", padx=0, pady=0)
         
@@ -359,7 +366,7 @@ class TextMulti(ctk.CTkFrame):
             parent=self,
             corner_radius=0,
             height=300,
-            font=self.textbox_font,
+            font=self.textbox_notes_font,
             fg_color=self.frame_bg_color,
             bg_color=self.frame_bg_color_invert,
             column=0,
@@ -380,8 +387,8 @@ class TextMulti(ctk.CTkFrame):
             border_width=1,
             values=["deutsch", "englisch", "spanisch"],
             font=self.button_font_small,
-            width=80,
-            height=20,
+            width=120,
+            height=30,
             sticky="w",
             padx=10,
             dropdown_fg_color=self.frame_bg_color,
@@ -425,16 +432,10 @@ class TextMulti(ctk.CTkFrame):
         self.textbox.delete("1.0", tk.END)
         name = askopenfilename()
         if name:
-            image = Image.open(name)
-            string = pytesseract.image_to_string(image)
-            test = string
-            self.textbox.insert(tk.END, test)
+            string = pytesseract.image_to_string(Image.open(name))
+            self.textbox.insert(tk.END, string)
             self.copy_button.configure(state=ctk.NORMAL)
             pyperclip.copy(self.textbox.get("1.0", tk.END))
 
-   # def getlang(self, choice):
-   #     print(choice)
-        
-
 if __name__ == "__main__":
-    App("", (300, 450), darkdetect.isDark())
+    App("", darkdetect.isDark())

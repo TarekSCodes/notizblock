@@ -15,12 +15,14 @@ class TextboxGrid(ctk.CTkTextbox):
 
 
 class EntryFieldPack(ctk.CTkEntry):
-    def __init__(self, parent, textvariable, corner_radius, border_width, width, side, padx, pady):
+    def __init__(self, parent, textvariable, corner_radius, border_width, width, height, side, padx, pady, font):
         super().__init__(
             master=parent,
             textvariable=textvariable,
             corner_radius=corner_radius,
             border_width=border_width,
-            width=width
+            width=width,
+            height=height,
+            font=font
             )
         self.pack(side=side, padx=padx, pady=pady)
