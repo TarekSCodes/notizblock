@@ -96,7 +96,7 @@ class TasksFrame(ctk.CTkScrollableFrame):
                 fg_color="#efb640",
                 bg_color="#efb640",
                 hover_color="#ff0000",
-                func=lambda: self.delete_task(single_note_frame, new_task),
+                func=lambda: self.delete_task(single_note_frame, count),
                 corner_radius=5,
                 text="",
                 rely=0.92,

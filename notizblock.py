@@ -238,6 +238,7 @@ class Notes(ctk.CTkFrame):
         # Diese StringVariable setzt den initial Wert des Entry Feldes
         self.entry_str = ctk.StringVar(value="")
         self.count = 0
+        self.notes_dict = {}
         self.notes_file = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'notizen.txt')
         
         # Eingaben
@@ -263,50 +264,75 @@ class Notes(ctk.CTkFrame):
         NormalPackFrame(self, 0, self.frame_bg_color, "x", 50, self.button_font_small, self.about_func)
     
     def read_notes_text_at_start(self):
+        # Liest Notizen aus der Datei notizen.txt und fügt sie zu self.notes_dict hinzu
         with open(self.notes_file, "r") as file:
-            # Prüfe, ob die Datei nicht leer ist
-            if file.readable() and not file.read().isspace():
-                # Setze den Dateizeiger auf den Anfang der Datei zurück
-                file.seek(0)
-
-            # Iteriere über die Zeilen der Datei
-            for i in file:
-                self.tasks_frame.update_tasks(i.strip(), self.count)
-                self.count += 1  # wird erhöht damit die Notizen in verschiedenen rows erstellt werden
+            content = file.read().strip()  # Entfernt Whitespaces und neue Zeilen am Anfang und Ende
+            pairs = content.split(",")
+            
+            for pair in pairs:
+                if pair:  # Überprüft, ob der String nicht leer ist
+                    parts = pair.split("-")
+                    if len(parts) == 2:  # Stellt sicher, dass es genau zwei Teile gibt
+                        key, value = parts
+                        self.notes_dict[int(key)] = value
+                        self.count += 1
+                    
+            # Aktualisiert die Benutzeroberfläche mit den geladenen Notizen
+            for key, value in self.notes_dict.items():
+                self.tasks_frame.update_tasks(value, key)
 
     def add_task(self):
         # Beim Klicken auf den entry_button wird diese Methode ausgeführt
         new_task = self.entry_str.get()  # Der Inhalt des Entry feldes wird ausgelesen
         if new_task:  # prüfen ob das Entry Feld nicht leer ist
+            
+            self.tasks_frame.update_tasks(new_task, self.count)
+            
             # Öffne die Datei im Schreibmodus (falls die Datei nicht existiert, wird sie erstellt)
             with open(self.notes_file, "a") as file:
                 # Schreibe die neue Notiz in die Datei
-                #file.write(f"{new_task};{self.tasks_frame.checkbox_get_status()} \n")
-                file.write(f"{new_task}\n")
+                file.write(f"{self.count}-{new_task},")
+                self.notes_dict[self.count] = new_task
+                self.count += 1  # wird erhöht damit die Notizen in verschiedenen rows erstellt werden
 
             self.entry_str.set("")  # das Entry Feld wird wieder geleert
-            self.tasks_frame.update_tasks(new_task, self.count)
-            self.count += 1  # wird erhöht damit die Notizen in verschiedenen rows erstellt werden
+            
+    def delete_task(self, frame, count):
+        try:
+            # Entferne den Eintrag aus der Datei
+            self.remove_task_from_file(count)
 
-    def delete_task(self, frame, new_task):
-        # Entferne den Eintrag aus der Datei
-        self.remove_task_from_file(new_task)
+            # Zerstören des Frames
+            frame.destroy()
+        except Exception as e:
+            print(f"Ein Fehler ist aufgetreten in delete_task: {e}")
 
-        # Zerstören des Frames
-        frame.destroy()
+    def remove_task_from_file(self, count):
+        try:
+            # Entfernen des Eintrags aus notizen.txt
+            if self.count in self.notes_dict:
+                del self.notes_dict[count]
+                
+            # Neuzuordnung der Schlüssel im Wörterbuch
+            new_dict = {}
+            new_key = 0
+            for key in sorted(self.notes_dict.keys()):
+                if key != count:  # Überspringen des gelöschten Schlüssels
+                    new_dict[new_key] = self.notes_dict[key]
+                    new_key += 1
+                    
+            self.notes_dict = new_dict  # Aktualisieren des Wörterbuchs mit neuen Schlüsseln
+                
+            # Neu schreiben der Datei mit dem aktualisierten Inhalt
+            with open("notizen.txt", "w") as file:
+                for key, value in self.notes_dict.items():
+                    file.write(f"{key}-{value},")
 
-    def remove_task_from_file(self, new_task):
-        # alle Zeilen der Datei werden gelesen und in die Liste lines hinzugefügt
-        with open(self.notes_file, "r") as file:
-            lines = file.readlines()
-
-        # durch die lines iterieren, Zeilen mit task überspringen den rest in eine neue Datei schreiben
-        with open(self.notes_file, "w") as file:
-            for line in lines:
-                if line.strip() != new_task:
-                    file.write(line)
-
-
+            self.count = new_key  # Aktualisieren des Zählers
+            
+        except Exception as e:
+            print(f"Ein Fehler ist aufgetreten in remove_task_from_file: {e}")
+   
 class TextMulti(ctk.CTkFrame):
     def __init__(self, parent, button_font_small, textbox_notes_font, button_color_hover, frame_bg_color, frame_bg_color_invert, button_font_color, copy_image, image2text, add_button_image, about_func):
         super().__init__(parent, fg_color=frame_bg_color, corner_radius=0)
