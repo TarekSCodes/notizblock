@@ -1,3 +1,4 @@
+from typing import Optional, Tuple, Union
 import customtkinter as ctk
 from buttons import*
 from text_entry import *
@@ -56,39 +57,30 @@ class TasksFrame(ctk.CTkScrollableFrame):
 
     # wird vom hinzufügen button getriggert erstellt für jeden neuen task_list Eintrag ein Frame,
     # welches ein label mit dem listen Eintrag und zwei buttons enthält
-    def update_tasks(self, new_task, count):
+    def update_tasks(self, new_task):
         if new_task:
-            
             # Das Main Frame der einzelnen Notiz
-            single_note_frame = NormalGridFrame(
+            single_note_frame = SingleNotesFrame(
                 parent=self,
                 corner_radius=5,
-                fg_color=self.frame_bg_color,
-                column=0,
-                row=count,
-                sticky="nsew"
+                fg_color=self.frame_bg_color
             )
- 
-            single_note_frame.columnconfigure(0, weight=1, uniform="a")
+            note_id = id(single_note_frame)
 
             # Das Textfeld der Notiz
-            text_box = TextboxGrid(
+            text_box = TextboxPack(
                 parent=single_note_frame,
                 corner_radius=5,
                 height=100,
                 font=self.textbox_notes_font,
                 fg_color="#efb640",
                 bg_color=self.frame_bg_color,
-                column=0,
-                columnspan=1,
-                row=count,
-                sticky="ew",
                 pady=5,
                 padx=10,
                 text_color="black"
             )
             text_box.insert("end", new_task)  # Hier wird die Eingabe aus dem Entry Feld in die text_box geschieben
-
+            
             ButtonPlace(
                 parent=single_note_frame,
                 width=10,
@@ -96,7 +88,7 @@ class TasksFrame(ctk.CTkScrollableFrame):
                 fg_color="#efb640",
                 bg_color="#efb640",
                 hover_color="#ff0000",
-                func=lambda: self.delete_task(single_note_frame, count),
+                func=lambda: self.delete_task(single_note_frame, note_id),
                 corner_radius=5,
                 text="",
                 rely=0.92,
@@ -104,6 +96,8 @@ class TasksFrame(ctk.CTkScrollableFrame):
                 anchor="se",
                 image=self.delete_button_image
             )
+            
+            return note_id
 
 class NormalGridFrame(ctk.CTkFrame):
     def __init__(self, parent, corner_radius, fg_color, column, row, sticky):
@@ -145,3 +139,14 @@ class NormalPackFrame(ctk.CTkFrame):
             font=self.button_font_small,
             sticky="e"
             )
+
+
+class SingleNotesFrame(ctk.CTkFrame):
+    def __init__(self, parent, corner_radius, fg_color):
+        super().__init__(
+            master=parent,
+            corner_radius=corner_radius,
+            fg_color=fg_color
+        )
+        self.pack(fill="x")
+
