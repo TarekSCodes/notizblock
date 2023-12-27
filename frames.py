@@ -27,7 +27,7 @@ class EntryFrame(ctk.CTkFrame):
             textvariable=self.entry_string,
             corner_radius=5,
             border_width=1,
-            width=200,
+            width=300,
             height=40,
             side="left",
             padx=10,
@@ -65,7 +65,6 @@ class TasksFrame(ctk.CTkScrollableFrame):
                 corner_radius=5,
                 fg_color=self.frame_bg_color
             )
-            note_id = id(single_note_frame)
 
             # Das Textfeld der Notiz
             text_box = TextboxPack(
@@ -80,6 +79,8 @@ class TasksFrame(ctk.CTkScrollableFrame):
                 text_color="black"
             )
             text_box.insert("end", new_task)  # Hier wird die Eingabe aus dem Entry Feld in die text_box geschieben
+            text_box.bind("<Leave>", self.task_edit)
+            text_box_id = id(text_box)
             
             ButtonPlace(
                 parent=single_note_frame,
@@ -88,7 +89,7 @@ class TasksFrame(ctk.CTkScrollableFrame):
                 fg_color="#efb640",
                 bg_color="#efb640",
                 hover_color="#ff0000",
-                func=lambda: self.delete_task(single_note_frame, note_id),
+                func=lambda: self.delete_task(single_note_frame, text_box_id),
                 corner_radius=5,
                 text="",
                 rely=0.92,
@@ -97,8 +98,26 @@ class TasksFrame(ctk.CTkScrollableFrame):
                 image=self.delete_button_image
             )
             
-            return note_id
+            return text_box_id
 
+    def task_edit(self, event): 
+        # Zugriff auf das Eltern-Widget
+        parent_widget = event.widget.master
+        if isinstance(parent_widget, TextboxPack):
+            text_box = parent_widget
+            current_content = text_box.get("0.0", "end").strip()
+            note_path = f"notes/{id(text_box)}.txt"
+
+            with open(note_path, "r") as file:
+                file_content = file.read().strip()
+            if file_content == current_content:
+                pass
+            else:
+                with open(note_path, "w") as file:
+                    file.write(current_content)       
+         
+        
+    
 class NormalGridFrame(ctk.CTkFrame):
     def __init__(self, parent, corner_radius, fg_color, column, row, sticky):
         super().__init__(parent, corner_radius=corner_radius, fg_color=fg_color)
@@ -149,4 +168,3 @@ class SingleNotesFrame(ctk.CTkFrame):
             fg_color=fg_color
         )
         self.pack(fill="x")
-

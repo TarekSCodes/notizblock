@@ -49,7 +49,7 @@ class App(ctk.CTk):
         self.geometry(f"{window_width}x{window_height}+{center_width}+{center_height}")
         self.attributes("-topmost", True)
         self.minsize(400, 650)
-        self.maxsize(500, 800)
+        self.maxsize(1000, 1000)
         self.title_bar_color(is_dark)
 
     def setup_fonts(self):
@@ -266,11 +266,11 @@ class Notes(ctk.CTkFrame):
             file_path = f"{self.notes_file}/{i}"
             with open(file_path, "r") as file:  # Liest die Textdateien aus
                 file_content = file.read().strip()
-                note_id = self.tasks_frame.update_tasks(file_content)  # erstellt daraus einen neue Notiz 
+                text_box_id = self.tasks_frame.update_tasks(file_content)  # erstellt daraus einen neue Notiz 
      
             os.remove(file_path)  # löscht die alte Textdatei
 
-            new_file_path = f"{self.notes_file}/{note_id}.txt"
+            new_file_path = f"{self.notes_file}/{text_box_id}.txt"
             with open(new_file_path, "w") as new_file:
                 new_file.write(file_content)  # schreibt den Inhalt der Notiz in eine neue Datei
 
@@ -279,34 +279,35 @@ class Notes(ctk.CTkFrame):
         new_task = self.entry_str.get()  # Der Inhalt des Entry feldes wird ausgelesen
         
         if new_task:  # prüfen ob das Entry Feld nicht leer ist
-            note_id = self.tasks_frame.update_tasks(new_task) 
+            text_box_id = self.tasks_frame.update_tasks(new_task) 
               
             # Öffne die Datei im Schreibmodus (falls die Datei nicht existiert, wird sie erstellt)
-            with open(f"{self.notes_file}/{note_id}.txt", "w") as file:
+            with open(f"{self.notes_file}/{text_box_id}.txt", "w") as file:
                 # Schreibe die neue Notiz in die Datei
                 file.write(f"{new_task}")
 
             self.entry_str.set("")  # das Entry Feld wird wieder geleert
             
-    def delete_task(self, frame, note_id):
+    def delete_task(self, frame, text_box_id):
         try:
             # Zerstören des Frames
             frame.destroy()
             
             # Entferne den Eintrag aus der Datei
-            self.remove_task_from_file(note_id)
+            self.remove_task_from_file(text_box_id)
 
         except Exception as e:
             print(f"Ein Fehler ist aufgetreten in delete_task: {e}")
 
-    def remove_task_from_file(self, note_id):
+    def remove_task_from_file(self, text_box_id):
         try:
             # Entfernen der txt Datei
-            unwanted_file = f"{self.notes_file}/{note_id}.txt"
+            unwanted_file = f"{self.notes_file}/{text_box_id}.txt"
             os.remove(unwanted_file)
             
         except Exception as e:
             print(f"Ein Fehler ist aufgetreten in remove_task_from_file: {e}")
+
    
 class TextMulti(ctk.CTkFrame):
     def __init__(self, parent, button_font_small, textbox_notes_font, button_color_hover, frame_bg_color, frame_bg_color_invert, button_font_color, copy_image, image2text, add_button_image, about_func):

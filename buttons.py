@@ -1,6 +1,5 @@
 import customtkinter as ctk
 
-
 # Buttons des Hauptmenüs
 class MainMenuButton(ctk.CTkButton):
     def __init__(self, parent, column, row, text, corner_radius,
