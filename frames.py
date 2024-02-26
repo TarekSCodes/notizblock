@@ -1,5 +1,5 @@
-from typing import Optional, Tuple, Union
 import customtkinter as ctk
+import os
 from buttons import*
 from text_entry import *
 
@@ -116,8 +116,7 @@ class TasksFrame(ctk.CTkScrollableFrame):
                 with open(note_path, "w") as file:
                     file.write(current_content)       
          
-        
-    
+          
 class NormalGridFrame(ctk.CTkFrame):
     def __init__(self, parent, corner_radius, fg_color, column, row, sticky):
         super().__init__(parent, corner_radius=corner_radius, fg_color=fg_color)

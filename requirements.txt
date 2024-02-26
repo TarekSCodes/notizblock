@@ -1,0 +1,6 @@
+customtkinter==1.0.0
+darkdetect==1.0.6
+googletrans==4.0.0rc1
+Pillow==8.4.0
+pytesseract==0.3.9
+pyperclip==1.8.2

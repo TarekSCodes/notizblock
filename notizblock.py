@@ -4,7 +4,6 @@ import darkdetect
 from frames import *
 from googletrans import Translator
 import os
-import pickle
 from PIL import Image
 import pyperclip
 import pytesseract
@@ -40,8 +39,8 @@ class App(ctk.CTk):
 
     def setup_window(self, title, is_dark):
         self.title(title)
-        icon_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'images/hamster.ico')
-        self.iconbitmap(icon_path)
+        #icon_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'images/hamster.ico')
+        #self.iconbitmap(icon_path)
         window_width = 400
         window_height = 650
         center_width = int((self.winfo_screenwidth() - window_width) / 2)
@@ -70,32 +69,32 @@ class App(ctk.CTk):
         image_size_topmenu = (35, 35)
         
         # image des add buttons zum hinzufügen von Notizen
-        add_icon = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'images/add_button.png')
-        add_icon_light = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'images/add_button_light.png')
+        add_icon = 'images\\add_button.png'
+        add_icon_light = 'images\\add_button_light.png'
         self.add_button_image = ctk.CTkImage(light_image=Image.open(add_icon_light), dark_image=Image.open(add_icon), size=(30, 30))
         
         # image des kopieren buttons welcher den übersetzten Text in die Zwischenablage kopiert
-        copy_icon = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'images/copy_light.png')
-        copy_icon_dark = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'images/copy_dark.png')
+        copy_icon = 'images\\copy_light.png'
+        copy_icon_dark = 'images\\copy_dark.png'
         self.copy_image = ctk.CTkImage(light_image=Image.open(copy_icon), dark_image=Image.open(copy_icon_dark), size=image25)
         
         # image des image2text buttons
-        image_icon = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'images/image2text_light.png')
-        image_icon_dark = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'images/image2text_dark.png')
+        image_icon = 'images\\image2text_light.png'
+        image_icon_dark = 'images\\image2text_dark.png'
         self.image2text = ctk.CTkImage(light_image=Image.open(image_icon), dark_image=Image.open(image_icon_dark), size=image25)
         
         # image des Notizen Tabs im Hauptmenu
-        notizen_icon = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'images/notizen.png')
-        notizen_icon_dark = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'images/notizen_dark.png')
+        notizen_icon = 'images\\notizen.png'
+        notizen_icon_dark = 'images\\notizen_dark.png'
         self.notizen_icon = ctk.CTkImage(light_image=Image.open(notizen_icon), dark_image=Image.open(notizen_icon_dark), size=image_size_topmenu)
 
         # image des Übersetzer Tabs im Hauptmenu
-        translator_icon = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'images/übersetzer.png')
-        translator_icon_dark = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'images/übersetzer_dark.png')
+        translator_icon = 'images\\übersetzer.png'
+        translator_icon_dark = 'images\\übersetzer_dark.png'
         self.translator_icon = ctk.CTkImage(light_image=Image.open(translator_icon), dark_image=Image.open(translator_icon_dark), size=image_size_topmenu)
         
         # image zum entfernen einzelner Notizen
-        delete_icon = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'images/delete_button.png')
+        delete_icon = 'images\\delete_button.png'
         self.delete_button_image = ctk.CTkImage(light_image=Image.open(delete_icon), dark_image=Image.open(delete_icon), size=(15, 15))
         
     def setup_frames(self):
@@ -237,7 +236,7 @@ class Notes(ctk.CTkFrame):
         # Diese StringVariable setzt den initial Wert des Entry Feldes
         self.entry_str = ctk.StringVar(value="")
         self.count = 0
-        self.notes_file = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'notes')
+        self.notes_file = 'notes'
         
         # Eingaben
         self.button_font_small = button_font_small
@@ -471,9 +470,11 @@ class TextMulti(ctk.CTkFrame):
         # prüfen ob entry feld nicht leer ist, wenn wahr dann wird der inhalt übersetzt
         # wenn unwahr wird die zwischenablage geprüft
         if self.entry_str.get():
+            print(self.entry_str.get())
             result = self.translator.translate(self.entry_str.get(), dest=current_language).text
         elif self.clipboard_get():
             result = self.translator.translate(self.clipboard_get(), dest=current_language).text
+            
         else:
             result = "Kein Text zum Übersetzen gefunden"
         self.textbox.insert(tk.END, result)
