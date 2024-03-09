@@ -1,4 +1,6 @@
 # Notizblock
+![1](https://github.com/Kintrax/notizblock/assets/144847405/5afb1388-8d1f-4022-8311-b0219a02757c)
+![2](https://github.com/Kintrax/notizblock/assets/144847405/9ff21dd7-f040-4505-95a9-442854293a64)
 
 Notizblock ist eine Python-Anwendung, die eine benutzerfreundliche Oberfläche bietet, um Notizen zu verwalten und Texte in verschiedene Sprachen zu übersetzen. Darüber hinaus ermöglicht es das Extrahieren von Text aus Bildern mithilfe der Optical Character Recognition (OCR)-Technologie.
 
