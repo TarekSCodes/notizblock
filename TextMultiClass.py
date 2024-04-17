@@ -1,4 +1,5 @@
 import customtkinter as ctk
+import const
 from frames import EntryFrame
 from googletrans import Translator
 import tkinter as tk
@@ -8,23 +9,12 @@ import pytesseract
 from tkinter.filedialog import askopenfilename
 
 class TextMulti(ctk.CTkFrame):
-    def __init__(self, parent, button_font_small, textbox_notes_font, button_color_hover, frame_bg_color, frame_bg_color_invert, button_font_color, copy_image, image2text, add_button_image, about_func):
-        super().__init__(parent, fg_color=frame_bg_color, corner_radius=0)
+    def __init__(self, parent, copy_image, image2text, add_button_image, about_func):
+        super().__init__(parent, corner_radius=0, fg_color=const.FRAME_BACKGROUND_COLOR)
         self.pack(expand=True, fill="both")
 
         self.entry_str = ctk.StringVar(value="")
         self.target_language = ctk.StringVar(value="deutsch")
-        
-        # font Eingaben
-        self.button_font_small = button_font_small
-        self.textbox_notes_font = textbox_notes_font
-
-        # color Eingaben
-        self.button_color = frame_bg_color
-        self.button_color_hover = button_color_hover
-        self.button_font_color = button_font_color
-        self.frame_bg_color = frame_bg_color
-        self.frame_bg_color_invert = frame_bg_color_invert
         
         # image Eingaben
         self.copy_image = copy_image
@@ -48,7 +38,7 @@ class TextMulti(ctk.CTkFrame):
 
     def create_widgets(self):
         
-        test = EntryFrame(self,self.translate_text, self.entry_str, self.frame_bg_color, self.button_color_hover, self.add_button_image, self.textbox_notes_font)
+        test = EntryFrame(self, self.translate_text, self.entry_str, self.add_button_image)
         test.pack_forget()
         test.grid(column=0, columnspan=2, row=0, sticky="w", padx=0, pady=0)
         
@@ -56,87 +46,94 @@ class TextMulti(ctk.CTkFrame):
             master=self,
             text="Übersetzen",
             height=50,
-            fg_color=self.button_color,
-            hover_color=self.button_color_hover,
-            text_color=self.button_font_color,
+            fg_color=const.FRAME_BACKGROUND_COLOR,
+            hover_color=const.BUTTON_COLOR_HOVER,
+            text_color=const.BUTTON_FONT_COLOR,
             command=self.translate_text,
-            font=self.button_font_small,
+            font=const.BUTTON_FONT_SMALL,
             corner_radius=0
-        ).grid(column=0, row=1, sticky="ew")
+        )
+        ubersetzenButton.grid(column=0, row=1, sticky="ew")
 
         boxLeerenButton = ctk.CTkButton(
             master=self,
             text="Leeren",
             height=50,
-            fg_color=self.button_color,
-            hover_color=self.button_color_hover,
-            text_color=self.button_font_color,
+            fg_color=const.FRAME_BACKGROUND_COLOR,
+            hover_color=const.BUTTON_COLOR_HOVER,
+            text_color=const.BUTTON_FONT_COLOR,
             command=self.empty_box,
-            font=self.button_font_small,
+            font=const.BUTTON_FONT_SMALL,
             corner_radius=0
-        ).grid(column=1, row=1, sticky="ew")
+        )
+        boxLeerenButton.grid(column=1, row=1, sticky="ew")
 
         image2TextButton = ctk.CTkButton(
             master=self,
             text="",
             height=50,
-            fg_color=self.button_color,
-            hover_color=self.button_color_hover,
-            text_color=self.button_font_color,
+            fg_color=const.FRAME_BACKGROUND_COLOR,
+            hover_color=const.BUTTON_COLOR_HOVER,
+            text_color=const.BUTTON_FONT_COLOR,
             command=self.imagefunk,
-            font=self.button_font_small,
+            font=const.BUTTON_FONT_SMALL,
             corner_radius=0,
             image=self.image2text
-        ).grid(column=1, row=2, sticky="ew")
+        )
+        image2TextButton.grid(column=1, row=2, sticky="ew")
         
         self.copy_button = ctk.CTkButton(
             master=self,
             text="",
             height=50,
-            fg_color=self.button_color,
-            hover_color=self.button_color_hover,
-            text_color=self.button_font_color,
+            fg_color=const.FRAME_BACKGROUND_COLOR,
+            hover_color=const.BUTTON_COLOR_HOVER,
+            text_color=const.BUTTON_FONT_COLOR,
             command=self.copy_clipboard,
-            font=self.button_font_small,
+            font=const.BUTTON_FONT_SMALL,
             corner_radius=0,
             state=ctk.DISABLED,
             image=self.copy_image
-        ).grid(column=0, row=2, sticky="ew")
+        )
+        self.copy_button.grid(column=0, row=2, sticky="ew")
 
         self.textbox = ctk.CTkTextbox(
             master=self,
             corner_radius=0,
             height=300,
-            font=self.textbox_notes_font,
-            fg_color=self.frame_bg_color,
-            bg_color=self.frame_bg_color,
-            text_color=self.frame_bg_color_invert
-        ).grid(column=0, columnspan=2, row=3, sticky="nsew", pady=0, padx=0)
+            font=const.TEXTBOX_NOTES_FONT,
+            fg_color=const.FRAME_BACKGROUND_COLOR,
+            bg_color=const.FRAME_BACKGROUND_COLOR,
+            text_color=const.FRAME_BACKGROUND_COLOR_INVERT
+        )
+        self.textbox.grid(column=0, columnspan=2, row=3, sticky="nsew", pady=0, padx=0)
         
         auswahlUebersetzungsSprache = ctk.CTkComboBox(
             master=self,
-            fg_color=self.frame_bg_color,
+            fg_color=const.FRAME_BACKGROUND_COLOR,
             border_width=1,
             values=["deutsch", "englisch", "spanisch"],
-            font=self.button_font_small,
+            font=const.BUTTON_FONT_SMALL,
             width=120,
             height=30,
-            dropdown_fg_color=self.frame_bg_color,
-            text_color=self.button_font_color,
-            dropdown_font=self.button_font_small,
+            dropdown_fg_color=const.FRAME_BACKGROUND_COLOR,
+            text_color=const.BUTTON_FONT_COLOR,
+            dropdown_font=const.BUTTON_FONT_SMALL,
             variable=self.target_language
-        ).grid(column=0, columnspan=1, row=4, sticky="w", padx=10)
+        )
+        auswahlUebersetzungsSprache.grid(column=0, columnspan=1, row=4, sticky="w", padx=10)
 
         aboutButton = ctk.CTkButton(
             master=self,
             text="About",
-            fg_color=self.frame_bg_color,
-            hover_color=self.frame_bg_color,
-            text_color="grey",
+            fg_color=const.FRAME_BACKGROUND_COLOR,
+            hover_color=const.FRAME_BACKGROUND_COLOR,
+            text_color=const.ABOUT_BUTTON_FONT_COLOR,
             command=self.about_func,
-            font=self.button_font_small,
-            corner_radius=0
-            ).grid(column=1, row=4, sticky="es")
+            font=const.BUTTON_FONT_SMALL,
+            width=10
+        )
+        aboutButton.grid(column=1, row=4, sticky="e", padx=20)
       
     def translate_text(self):
         self.textbox.delete("1.0", tk.END)

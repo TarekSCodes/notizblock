@@ -1,10 +1,11 @@
 import customtkinter as ctk
+import const
 from notizblock import EntryFrame, TasksFrame, NormalPackFrame
 import os
 
 class Notes(ctk.CTkFrame):
-    def __init__(self, parent, notes_font, frame_bg_color, button_color_hover, add_button_image, delete_button_image, button_font_small, button_font_color, about_func):
-        super().__init__(parent, fg_color=frame_bg_color)
+    def __init__(self, parent, add_button_image, delete_button_image, about_func):
+        super().__init__(parent)
         self.pack(expand=True, fill="both")
 
         # Diese StringVariable setzt den initial Wert des Entry Feldes
@@ -13,14 +14,8 @@ class Notes(ctk.CTkFrame):
         self.notes_file = 'notes'
         
         # Eingaben
-        self.button_font_small = button_font_small
-        self.notes_font = notes_font
-        self.frame_bg_color = frame_bg_color
-        self.button_color_hover = button_color_hover
         self.add_button_image = add_button_image
         self.delete_button_image = delete_button_image
-        self.button_font_small = button_font_small
-        self.button_font_color = button_font_color
         self.about_func = about_func
 
         # Frames
@@ -30,9 +25,14 @@ class Notes(ctk.CTkFrame):
         self.read_notes_text_at_start()
 
     def create_widgets(self):
-        EntryFrame(self, self.add_task, self.entry_str, self.frame_bg_color, self.button_color_hover, self.add_button_image, self.notes_font)
-        self.tasks_frame = TasksFrame(self, self.delete_task, self.notes_font, self.frame_bg_color, self.delete_button_image)
-        NormalPackFrame(self, 0, self.frame_bg_color, "x", 50, self.button_font_small, self.about_func)
+        EntryFrame(self, self.add_task, self.entry_str, self.add_button_image)
+        self.tasks_frame = TasksFrame(self, self.delete_task, self.delete_button_image)
+        NormalPackFrame(
+            parent=self,
+            corner_radius=0,
+            fill="x",
+            height=50,
+            about_func=self.about_func)
     
     def read_notes_text_at_start(self):
         for i in os.listdir(self.notes_file):

@@ -1,4 +1,5 @@
 import customtkinter as ctk
+import const
 import darkdetect
 from frames import *
 from NotesClass import *
@@ -26,9 +27,8 @@ class App(ctk.CTk):
     def __init__(self, title, is_dark):
         super().__init__(fg_color=("#f3f3f3", "#191919"))
 
+        const.initaliziereFonts()
         self.setup_window(title, is_dark)  # Window Setup
-        self.setup_fonts()
-        self.setup_colors()
         self.setup_images()
         self.setup_frames()
         
@@ -49,19 +49,6 @@ class App(ctk.CTk):
         self.minsize(400, 650)
         self.maxsize(1000, 1000)
         self.title_bar_color(is_dark)
-
-    def setup_fonts(self):
-        # fonts
-        self.button_font = ctk.CTkFont("Calibri", 22, weight="bold")
-        self.button_font_small = ctk.CTkFont("Calibri", 18, weight="bold")
-        self.textbox_notes_font = ctk.CTkFont("calibre", 20)
-
-    def setup_colors(self):
-        # colors
-        self.button_color_hover = ("#dadada", "#2c2c2c")
-        self.frame_bg_color = ("#f3f3f3", "#191919")
-        self.frame_bg_color_invert = ("#191919", "#f3f3f3")
-        self.button_font_color = ("#2c2c2c", "#5e5e5e")
 
     def setup_images(self):
         image25 = (25, 25)
@@ -98,26 +85,15 @@ class App(ctk.CTk):
         
     def setup_frames(self):
         self.note_frame = Notes(
-            self,
-            self.textbox_notes_font,
-            self.frame_bg_color,
-            self.button_color_hover,
-            self.add_button_image,
-            self.delete_button_image,
-            self.button_font_small,
-            self.button_font_color,
-            self.about_func
+            parent=self,
+            add_button_image=self.add_button_image,
+            delete_button_image=self.delete_button_image,
+            about_func=self.about_func
         )
         self.note_frame.pack_forget()
         
         self.text_multi_frame = TextMulti(
             self,
-            self.button_font_small,
-            self.textbox_notes_font,
-            self.button_color_hover,
-            self.frame_bg_color,
-            self.frame_bg_color_invert,
-            self.button_font_color,
             self.copy_image,
             self.image2text,
             self.add_button_image,
@@ -125,10 +101,13 @@ class App(ctk.CTk):
             )
         self.text_multi_frame.pack_forget()
         
-        TopMenu(self, self.button_font, self.button_color_hover,
-                self.button_font_small, self.textbox_notes_font,
-                self.text_multi_frame, self.note_frame, self.frame_bg_color,
-                self.notizen_icon, self.translator_icon)
+        TopMenu(
+            self,
+            self.text_multi_frame,
+            self.note_frame,
+            self.notizen_icon,
+            self.translator_icon
+            )
         
         TopSeparator = ctk.CTkFrame(
             master=self,
