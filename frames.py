@@ -1,8 +1,4 @@
 import customtkinter as ctk
-import os
-from buttons import*
-from text_entry import *
-
 
 # beinhaltet das Entry Feld und den hinzufügen Button
 class EntryFrame(ctk.CTkFrame):
@@ -22,26 +18,35 @@ class EntryFrame(ctk.CTkFrame):
 
     def create_widgets(self):
         # Entry zum Eingeben der Aufgaben
-        EntryFieldPack(
-            parent=self,
+        ctk.CTkEntry(
+            master=self,
             textvariable=self.entry_string,
             corner_radius=5,
             border_width=1,
             width=300,
             height=40,
-            side="left",
-            padx=10,
-            pady=5,
             font=self.textbox_notes_font
-        )
+        ).pack(side="left", padx=10, pady=5)
         
         # Button zum Hinzufügen der Aufgaben - führt beim klicken die Methode add_task aus welche in
         # der Klasse Notes deklariert und beim Aufruf an die EntryFrame Klasse übergeben wird
-        ButtonPack(self, 20, 40, self.frame_bg_color, self.button_color_hover, self.command, 5, "", 0, anchor=None, side="left", image=self.add_button_image)
+        ctk.CTkButton(
+            master=self,
+            text="",
+            width=20,
+            height=40,
+            fg_color=self.frame_bg_color,
+            hover_color=self.button_color_hover,
+            command=self.command,
+            corner_radius=5, 
+            image=self.add_button_image
+            ).pack(pady=0, anchor=None, side="left")
     
-# Klasse zum Hinzufügen von neuen Notizzetteln
-# dies ist das Parent Frame für alle Notizen unter dem Entry Feld
+
 class TasksFrame(ctk.CTkScrollableFrame):
+    """ Klasse zum Hinzufügen von neuen Notizzetteln,
+    dies ist das Parent Frame für alle Notizen unter dem Entry Feld
+    """
     def __init__(self, parent, delete_task, textbox_notes_font, frame_bg_color, delete_button_image):
         super().__init__(parent, corner_radius=0, fg_color=frame_bg_color)
         self.pack(fill="both", expand=True)
@@ -60,50 +65,48 @@ class TasksFrame(ctk.CTkScrollableFrame):
     def update_tasks(self, new_task):
         if new_task:
             # Das Main Frame der einzelnen Notiz
-            single_note_frame = SingleNotesFrame(
-                parent=self,
+            single_note_frame = ctk.CTkFrame(
+                master=self,
                 corner_radius=5,
                 fg_color=self.frame_bg_color
             )
+            single_note_frame.pack(fill="x")
 
             # Das Textfeld der Notiz
-            text_box = TextboxPack(
-                parent=single_note_frame,
+            notizZettelTextBox = ctk.CTkTextbox(
+                master=single_note_frame,
                 corner_radius=5,
                 height=100,
                 font=self.textbox_notes_font,
                 fg_color="#efb640",
                 bg_color=self.frame_bg_color,
-                pady=5,
-                padx=10,
                 text_color="black"
             )
-            text_box.insert("end", new_task)  # Hier wird die Eingabe aus dem Entry Feld in die text_box geschieben
-            text_box.bind("<Leave>", self.task_edit)
-            text_box_id = id(text_box)
+            notizZettelTextBox.pack(fill="x", pady=5, padx=10)
             
-            ButtonPlace(
-                parent=single_note_frame,
+            notizZettelTextBox.insert("end", new_task)  # Hier wird die Eingabe aus dem Entry Feld in die text_box geschieben
+            notizZettelTextBox.bind("<Leave>", self.task_edit)
+            text_box_id = id(notizZettelTextBox)
+            
+            ctk.CTkButton(
+                master=single_note_frame,
                 width=10,
                 height=10,
                 fg_color="#efb640",
                 bg_color="#efb640",
                 hover_color="#ff0000",
-                func=lambda: self.delete_task(single_note_frame, text_box_id),
+                command=lambda: self.delete_task(single_note_frame, text_box_id),
                 corner_radius=5,
                 text="",
-                rely=0.92,
-                relx=0.95,
-                anchor="se",
                 image=self.delete_button_image
-            )
+            ).place(rely=0.92, relx=0.95, anchor="se")
             
             return text_box_id
 
     def task_edit(self, event): 
         # Zugriff auf das Eltern-Widget
         parent_widget = event.widget.master
-        if isinstance(parent_widget, TextboxPack):
+        if isinstance(parent_widget, ctk.CTkTextbox):
             text_box = parent_widget
             current_content = text_box.get("0.0", "end").strip()
             note_path = f"notes/{id(text_box)}.txt"
@@ -145,25 +148,12 @@ class NormalPackFrame(ctk.CTkFrame):
         self.create_widgets()
         
     def create_widgets(self):
-        Button(
-            parent=self,
+        ctk.CTkButton(
+            master=self,
             text="About",
-            func=self.about_func,
-            col=1,
-            row=0,
             fg_color=self.frame_bg_color,
             hover_color=self.frame_bg_color,
             text_color="grey",
-            font=self.button_font_small,
-            sticky="e"
-            )
-
-
-class SingleNotesFrame(ctk.CTkFrame):
-    def __init__(self, parent, corner_radius, fg_color):
-        super().__init__(
-            master=parent,
-            corner_radius=corner_radius,
-            fg_color=fg_color
-        )
-        self.pack(fill="x")
+            command=self.about_func,
+            font=self.button_font_small
+            ).grid(column=1, row=0, sticky="e")

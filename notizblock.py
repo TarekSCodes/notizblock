@@ -1,14 +1,13 @@
-from buttons import *
 import customtkinter as ctk
 import darkdetect
 from frames import *
-from googletrans import Translator
+from NotesClass import *
+from TextMultiClass import TextMulti
+from TopMenuClass import TopMenu
 import os
 from PIL import Image
 import pyperclip
 import pytesseract
-from text_entry import *
-import tkinter as tk
 from tkinter.filedialog import askopenfilename
 
 tesseract_path = os.path.join(os.environ['ProgramFiles'], 'Tesseract-OCR', 'tesseract.exe')
@@ -131,7 +130,13 @@ class App(ctk.CTk):
                 self.text_multi_frame, self.note_frame, self.frame_bg_color,
                 self.notizen_icon, self.translator_icon)
         
-        TopSeparator(self)
+        TopSeparator = ctk.CTkFrame(
+            master=self,
+            corner_radius=0,
+            fg_color=("black", "#5d5d5d"),
+            height=1)
+        TopSeparator.pack(fill="x")
+        
         
         self.note_frame.pack(expand=True, fill="both")
 
@@ -144,8 +149,8 @@ class App(ctk.CTk):
         else:
             self.about_window.focus()
 
-    # Funktion zum Ändern Titelleiste je nachdem ob ein dunkles oder helles Thema ausgewählt ist
     def title_bar_color(self, is_dark):
+        """Funktion zum Ändern Titelleiste je nachdem ob ein dunkles oder helles Thema ausgewählt ist"""
         try:
             hwnd = windll.user32.GetParent(self.winfo_id())
             dwmwa_attribute = 35
@@ -158,345 +163,6 @@ class App(ctk.CTk):
             pass
 
 
-class TopMenu(ctk.CTkFrame):
-    def __init__(self, parent, button_font, button_color_hover,
-                 button_font_small,textbox_notes_font, text_multi_frame, note_frame, frame_bg_color, notizen_icon, translator_icon):
-        super().__init__(parent, fg_color=frame_bg_color, corner_radius=0)
-        self.pack(fill="x", ipady=10)
-
-        # define top menu grid
-        self.columnconfigure((0, 1), weight=1, uniform="a")
-        self.rowconfigure(0, weight=1, uniform="a")
-
-        # Eingaben aus der Hauptklasse (App)
-        self.button_font = button_font
-        self.button_font_small = button_font_small
-        self.textbox_notes_font = textbox_notes_font
-        self.button_color_hover = button_color_hover
-        self.frame_bg_color = frame_bg_color
-        self.text_multi_frame = text_multi_frame
-        self.note_frame = note_frame
-        self.notizen_icon = notizen_icon
-        self.translator_icon = translator_icon
-
-        # place widgets
-        self.create_top_menu_widgets()
-
-    def create_top_menu_widgets(self):
-        # notes button
-        MainMenuButton(parent=self,
-                       column=0,
-                       row=0,
-                       text="Notizen",
-                       corner_radius=0,
-                       padx=0,
-                       sticky="nsew",
-                       image=self.notizen_icon,
-                       font=self.button_font,
-                       hover_color=self.button_color_hover,
-                       command=self.menu_func_notes
-                       )
-
-        # translator button
-        MainMenuButton(parent=self,
-                       column=1,
-                       row=0,
-                       text="Übersetzer",
-                       corner_radius=0,
-                       padx=0,
-                       sticky="nsew",
-                       image=self.translator_icon,
-                       font=self.button_font,
-                       hover_color=self.button_color_hover,
-                       command=self.menu_func_text_multi
-                       )
-
-    # versteckt das note_frame und zeigt das text_multi_frame an
-    def menu_func_text_multi(self):
-        self.note_frame.pack_forget()
-        self.text_multi_frame.pack(expand=True, fill="both")
-
-    # versteckt das text_multi_frame und zeigt das note_frame an
-    def menu_func_notes(self):
-        self.text_multi_frame.pack_forget()
-        self.note_frame.pack(expand=True, fill="both")
-
-
-class TopSeparator(ctk.CTkFrame):
-    def __init__(self, parent):
-        super().__init__(parent, corner_radius=0, fg_color=("black", "#5d5d5d"), height=1)
-        self.pack(fill="x")
-
-
-class Notes(ctk.CTkFrame):
-    def __init__(self, parent, notes_font, frame_bg_color, button_color_hover, add_button_image, delete_button_image, button_font_small, button_font_color, about_func):
-        super().__init__(parent, fg_color=frame_bg_color)
-        self.pack(expand=True, fill="both")
-
-        # Diese StringVariable setzt den initial Wert des Entry Feldes
-        self.entry_str = ctk.StringVar(value="")
-        self.count = 0
-        self.notes_file = 'notes'
-        
-        # Eingaben
-        self.button_font_small = button_font_small
-        self.notes_font = notes_font
-        self.frame_bg_color = frame_bg_color
-        self.button_color_hover = button_color_hover
-        self.add_button_image = add_button_image
-        self.delete_button_image = delete_button_image
-        self.button_font_small = button_font_small
-        self.button_font_color = button_font_color
-        self.about_func = about_func
-
-        # Frames
-        self.create_widgets()
-        
-        # Methode zum auslesen der notizen.txt Datei ausführen
-        self.read_notes_text_at_start()
-
-    def create_widgets(self):
-        EntryFrame(self, self.add_task, self.entry_str, self.frame_bg_color, self.button_color_hover, self.add_button_image, self.notes_font)
-        self.tasks_frame = TasksFrame(self, self.delete_task, self.notes_font, self.frame_bg_color, self.delete_button_image)
-        NormalPackFrame(self, 0, self.frame_bg_color, "x", 50, self.button_font_small, self.about_func)
-    
-    def read_notes_text_at_start(self):
-        for i in os.listdir(self.notes_file):
-            file_path = f"{self.notes_file}/{i}"
-            with open(file_path, "r") as file:  # Liest die Textdateien aus
-                file_content = file.read().strip()
-                text_box_id = self.tasks_frame.update_tasks(file_content)  # erstellt daraus einen neue Notiz 
-     
-            os.remove(file_path)  # löscht die alte Textdatei
-
-            new_file_path = f"{self.notes_file}/{text_box_id}.txt"
-            with open(new_file_path, "w") as new_file:
-                new_file.write(file_content)  # schreibt den Inhalt der Notiz in eine neue Datei
-
-    def add_task(self):
-        # Beim Klicken auf den entry_button wird diese Methode ausgeführt
-        new_task = self.entry_str.get()  # Der Inhalt des Entry feldes wird ausgelesen
-        
-        if new_task:  # prüfen ob das Entry Feld nicht leer ist
-            text_box_id = self.tasks_frame.update_tasks(new_task) 
-              
-            # Öffne die Datei im Schreibmodus (falls die Datei nicht existiert, wird sie erstellt)
-            with open(f"{self.notes_file}/{text_box_id}.txt", "w") as file:
-                # Schreibe die neue Notiz in die Datei
-                file.write(f"{new_task}")
-
-            self.entry_str.set("")  # das Entry Feld wird wieder geleert
-            
-    def delete_task(self, frame, text_box_id):
-        try:
-            # Zerstören des Frames
-            frame.destroy()
-            
-            # Entferne den Eintrag aus der Datei
-            self.remove_task_from_file(text_box_id)
-
-        except Exception as e:
-            print(f"Ein Fehler ist aufgetreten in delete_task: {e}")
-
-    def remove_task_from_file(self, text_box_id):
-        try:
-            # Entfernen der txt Datei
-            unwanted_file = f"{self.notes_file}/{text_box_id}.txt"
-            os.remove(unwanted_file)
-            
-        except Exception as e:
-            print(f"Ein Fehler ist aufgetreten in remove_task_from_file: {e}")
-
-   
-class TextMulti(ctk.CTkFrame):
-    def __init__(self, parent, button_font_small, textbox_notes_font, button_color_hover, frame_bg_color, frame_bg_color_invert, button_font_color, copy_image, image2text, add_button_image, about_func):
-        super().__init__(parent, fg_color=frame_bg_color, corner_radius=0)
-        self.pack(expand=True, fill="both")
-
-        self.entry_str = ctk.StringVar(value="")
-        self.target_language = ctk.StringVar(value="deutsch")
-        
-        # font Eingaben
-        self.button_font_small = button_font_small
-        self.textbox_notes_font = textbox_notes_font
-
-        # color Eingaben
-        self.button_color = frame_bg_color
-        self.button_color_hover = button_color_hover
-        self.button_font_color = button_font_color
-        self.frame_bg_color = frame_bg_color
-        self.frame_bg_color_invert = frame_bg_color_invert
-        
-        # image Eingaben
-        self.copy_image = copy_image
-        self.image2text = image2text
-        self.add_button_image = add_button_image
-        
-        # func Eingaben
-        self.about_func = about_func
-
-        # grid definieren
-        self.columnconfigure((0, 1), weight=1, uniform="a")
-        self.rowconfigure(0, weight=1, uniform="b")
-        self.rowconfigure(1, weight=1, uniform="b")
-        self.rowconfigure(2, weight=1, uniform="b")
-        self.rowconfigure(3, weight=100, uniform="c")
-        self.rowconfigure(4, weight=1, uniform="b")
-
-        self.create_widgets()
-
-        self.translator = Translator()
-
-    def create_widgets(self):
-        
-        test = EntryFrame(self,self.translate_text, self.entry_str, self.frame_bg_color, self.button_color_hover, self.add_button_image, self.textbox_notes_font)
-        test.pack_forget()
-        test.grid(column=0, columnspan=2, row=0, sticky="w", padx=0, pady=0)
-        
-        # übersetzen button
-        Button(
-            parent=self,
-            text="Übersetzen",
-            func=self.translate_text,
-            col=0,
-            row=1,
-            fg_color=self.button_color,
-            hover_color=self.button_color_hover,
-            text_color=self.button_font_color,
-            font=self.button_font_small
-        )
-
-        # box leeren button
-        Button(
-            parent=self,
-            text="Leeren",
-            func=self.empty_box,
-            col=1,
-            row=1,
-            fg_color=self.button_color,
-            hover_color=self.button_color_hover,
-            text_color=self.button_font_color,
-            font=self.button_font_small
-        )
-
-        # imagetotext button
-        Button(
-            parent=self,
-            text="",
-            func=self.imagefunk,
-            col=1,
-            row=2,
-            fg_color=self.button_color,
-            hover_color=self.button_color_hover,
-            text_color=self.button_font_color,
-            font=self.button_font_small,
-            image=self.image2text
-        )
-        
-        self.copy_button = Button(
-            parent=self,
-            text="",
-            func=self.copy_clipboard,
-            col=0,
-            row=2,
-            fg_color=self.button_color,
-            hover_color=self.button_color_hover,
-            text_color=self.button_font_color,
-            font=self.button_font_small,
-            state=ctk.DISABLED,
-            image=self.copy_image
-        )
-
-        self.textbox = TextboxGrid(
-            parent=self,
-            corner_radius=0,
-            height=300,
-            font=self.textbox_notes_font,
-            fg_color=self.frame_bg_color,
-            bg_color=self.frame_bg_color,
-            column=0,
-            columnspan=2,
-            row=3,
-            sticky="nsew",
-            pady=0,
-            padx=0,
-            text_color=self.frame_bg_color_invert
-        )
-        
-        ChoiceBox(
-            parent=self,
-            column=0,
-            columnspan=1,
-            row=4,
-            fg_color=self.frame_bg_color,
-            border_width=1,
-            values=["deutsch", "englisch", "spanisch"],
-            font=self.button_font_small,
-            width=120,
-            height=30,
-            sticky="w",
-            padx=10,
-            dropdown_fg_color=self.frame_bg_color,
-            text_color=self.button_font_color,
-            dropdown_font=self.button_font_small,
-            variable=self.target_language
-        )
-
-        Button(
-            parent=self,
-            text="About",
-            func=self.about_func,
-            col=1,
-            row=4,
-            fg_color=self.frame_bg_color,
-            hover_color=self.frame_bg_color,
-            text_color="grey",
-            font=self.button_font_small,
-            sticky="es"
-            )
-        
-    def translate_text(self):
-        self.textbox.delete("1.0", tk.END)
-        
-        # prüfen welche Zielsprache ausgewählt ist und diese an den translator weitergeben
-        current_language = ""
-        if self.target_language.get() == "deutsch":
-            current_language = "de"
-        elif self.target_language.get() == "englisch":
-            current_language = "en"
-        else:
-            current_language = "es"
-            
-        # prüfen ob entry feld nicht leer ist, wenn wahr dann wird der inhalt übersetzt
-        # wenn unwahr wird die zwischenablage geprüft
-        if self.entry_str.get():
-            print(self.entry_str.get())
-            result = self.translator.translate(self.entry_str.get(), dest=current_language).text
-        elif self.clipboard_get():
-            result = self.translator.translate(self.clipboard_get(), dest=current_language).text
-            
-        else:
-            result = "Kein Text zum Übersetzen gefunden"
-        self.textbox.insert(tk.END, result)
-        self.copy_button.configure(state=ctk.NORMAL)
-
-    def empty_box(self):
-        self.textbox.delete("1.0", tk.END)
-        self.copy_button.configure(state=ctk.DISABLED)
-        self.entry_str.set("")
-
-    def copy_clipboard(self):
-        pyperclip.copy(self.textbox.get("1.0", tk.END))
-
-    def imagefunk(self):
-        self.textbox.delete("1.0", tk.END)
-        name = askopenfilename()
-        if name:
-            string = pytesseract.image_to_string(Image.open(name))
-            self.textbox.insert(tk.END, string)
-            self.copy_button.configure(state=ctk.NORMAL)
-            pyperclip.copy(self.textbox.get("1.0", tk.END))
-
-
 if __name__ == "__main__":
     App("", darkdetect.isDark())
+    
