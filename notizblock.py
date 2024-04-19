@@ -6,7 +6,6 @@ from NotesClass import *
 from TextMultiClass import TextMulti
 from TopMenuClass import TopMenu
 import os
-from PIL import Image
 import pyperclip
 import pytesseract
 from tkinter.filedialog import askopenfilename
@@ -28,8 +27,7 @@ class App(ctk.CTk):
         super().__init__(fg_color=("#f3f3f3", "#191919"))
 
         const.initaliziereFonts()
-        self.setup_window(title, is_dark)  # Window Setup
-        self.setup_images()
+        self.setup_window(title, is_dark)
         self.setup_frames()
         
         self.about_window = None
@@ -49,64 +47,24 @@ class App(ctk.CTk):
         self.minsize(400, 650)
         self.maxsize(1000, 1000)
         self.title_bar_color(is_dark)
-
-    def setup_images(self):
-        image25 = (25, 25)
-        image_size_topmenu = (35, 35)
-        
-        # image des add buttons zum hinzufügen von Notizen
-        add_icon = 'images\\add_button.png'
-        add_icon_light = 'images\\add_button_light.png'
-        self.add_button_image = ctk.CTkImage(light_image=Image.open(add_icon_light), dark_image=Image.open(add_icon), size=(30, 30))
-        
-        # image des kopieren buttons welcher den übersetzten Text in die Zwischenablage kopiert
-        copy_icon = 'images\\copy_light.png'
-        copy_icon_dark = 'images\\copy_dark.png'
-        self.copy_image = ctk.CTkImage(light_image=Image.open(copy_icon), dark_image=Image.open(copy_icon_dark), size=image25)
-        
-        # image des image2text buttons
-        image_icon = 'images\\image2text_light.png'
-        image_icon_dark = 'images\\image2text_dark.png'
-        self.image2text = ctk.CTkImage(light_image=Image.open(image_icon), dark_image=Image.open(image_icon_dark), size=image25)
-        
-        # image des Notizen Tabs im Hauptmenu
-        notizen_icon = 'images\\notizen.png'
-        notizen_icon_dark = 'images\\notizen_dark.png'
-        self.notizen_icon = ctk.CTkImage(light_image=Image.open(notizen_icon), dark_image=Image.open(notizen_icon_dark), size=image_size_topmenu)
-
-        # image des Übersetzer Tabs im Hauptmenu
-        translator_icon = 'images\\übersetzer.png'
-        translator_icon_dark = 'images\\übersetzer_dark.png'
-        self.translator_icon = ctk.CTkImage(light_image=Image.open(translator_icon), dark_image=Image.open(translator_icon_dark), size=image_size_topmenu)
-        
-        # image zum entfernen einzelner Notizen
-        delete_icon = 'images\\delete_button.png'
-        self.delete_button_image = ctk.CTkImage(light_image=Image.open(delete_icon), dark_image=Image.open(delete_icon), size=(15, 15))
-        
+     
     def setup_frames(self):
         self.note_frame = Notes(
             parent=self,
-            add_button_image=self.add_button_image,
-            delete_button_image=self.delete_button_image,
             about_func=self.about_func
         )
         self.note_frame.pack_forget()
         
         self.text_multi_frame = TextMulti(
-            self,
-            self.copy_image,
-            self.image2text,
-            self.add_button_image,
-            self.about_func
+            parent=self,
+            about_func=self.about_func
             )
         self.text_multi_frame.pack_forget()
         
         TopMenu(
-            self,
-            self.text_multi_frame,
-            self.note_frame,
-            self.notizen_icon,
-            self.translator_icon
+            parent=self,
+            text_multi_frame=self.text_multi_frame,
+            note_frame=self.note_frame
             )
         
         TopSeparator = ctk.CTkFrame(
@@ -115,8 +73,7 @@ class App(ctk.CTk):
             fg_color=("black", "#5d5d5d"),
             height=1)
         TopSeparator.pack(fill="x")
-        
-        
+           
         self.note_frame.pack(expand=True, fill="both")
 
     def about_func(self):

@@ -3,20 +3,19 @@ import const
 
 # beinhaltet das Entry Feld und den hinzufügen Button
 class EntryFrame(ctk.CTkFrame):
-    def __init__(self, parent, func, entry_string, add_button_image):
+    def __init__(self, parent, func, entry_string):
         super().__init__(parent, corner_radius=0, fg_color=const.FRAME_BACKGROUND_COLOR)
         self.pack(fill="x")
         
         # Eingaben
         self.command = func
         self.entry_string = entry_string
-        self.add_button_image = add_button_image
         
         self.create_widgets()
 
     def create_widgets(self):
         # Entry zum Eingeben der Aufgaben
-        ctk.CTkEntry(
+        textBoxNotizen = ctk.CTkEntry(
             master=self,
             textvariable=self.entry_string,
             corner_radius=5,
@@ -24,11 +23,11 @@ class EntryFrame(ctk.CTkFrame):
             width=300,
             height=40,
             font=const.TEXTBOX_NOTES_FONT
-        ).pack(side="left", padx=10, pady=5)
+        )
+        textBoxNotizen.pack(side="left", padx=10, pady=5)
         
-        # Button zum Hinzufügen der Aufgaben - führt beim klicken die Methode add_task aus welche in
-        # der Klasse Notes deklariert und beim Aufruf an die EntryFrame Klasse übergeben wird
-        ctk.CTkButton(
+        # Button zum Hinzufügen der Aufgaben
+        erstelleNotizButton = ctk.CTkButton(
             master=self,
             text="",
             width=20,
@@ -37,15 +36,16 @@ class EntryFrame(ctk.CTkFrame):
             hover_color=const.BUTTON_COLOR_HOVER,
             command=self.command,
             corner_radius=5, 
-            image=self.add_button_image
-            ).pack(pady=0, anchor=None, side="left")
+            image=const.ADD_BUTTON_IMAGE
+            )
+        erstelleNotizButton.pack(pady=0, anchor=None, side="left")
     
 
 class TasksFrame(ctk.CTkScrollableFrame):
     """ Klasse zum Hinzufügen von neuen Notizzetteln,
     dies ist das Parent Frame für alle Notizen unter dem Entry Feld
     """
-    def __init__(self, parent, delete_task, delete_button_image):
+    def __init__(self, parent, delete_task):
         super().__init__(parent, corner_radius=0, fg_color=const.FRAME_BACKGROUND_COLOR)
         self.pack(fill="both", expand=True)
 
@@ -54,7 +54,6 @@ class TasksFrame(ctk.CTkScrollableFrame):
         
         # Eingaben
         self.delete_task = delete_task
-        self.delete_button_image = delete_button_image
 
     # wird vom hinzufügen button getriggert erstellt für jeden neuen task_list Eintrag ein 
     # label mit dem listen Eintrag und zwei buttons enthält
@@ -97,7 +96,7 @@ class TasksFrame(ctk.CTkScrollableFrame):
                 command=lambda: self.delete_task(single_note_frame, text_box_id),
                 corner_radius=5,
                 text="",
-                image=self.delete_button_image
+                image=const.DELETE_ICON_IMAGE
             )
             notizDeleteButton.place(rely=0.92, relx=0.95, anchor="se")
             
@@ -139,7 +138,7 @@ class NormalPackFrame(ctk.CTkFrame):
         self.create_widgets()
         
     def create_widgets(self):
-        ctk.CTkButton(
+        aboutButton = ctk.CTkButton(
             master=self,
             text="About",
             fg_color=const.FRAME_BACKGROUND_COLOR,
@@ -148,4 +147,5 @@ class NormalPackFrame(ctk.CTkFrame):
             command=self.about_func,
             font=const.BUTTON_FONT_SMALL,
             width=10
-            ).grid(column=1, row=0, sticky="e",padx=20, pady=12)
+            )
+        aboutButton.grid(column=1, row=0, sticky="e",padx=20, pady=12)

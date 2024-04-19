@@ -9,17 +9,12 @@ import pytesseract
 from tkinter.filedialog import askopenfilename
 
 class TextMulti(ctk.CTkFrame):
-    def __init__(self, parent, copy_image, image2text, add_button_image, about_func):
+    def __init__(self, parent, about_func):
         super().__init__(parent, corner_radius=0, fg_color=const.FRAME_BACKGROUND_COLOR)
         self.pack(expand=True, fill="both")
 
         self.entry_str = ctk.StringVar(value="")
         self.target_language = ctk.StringVar(value="deutsch")
-        
-        # image Eingaben
-        self.copy_image = copy_image
-        self.image2text = image2text
-        self.add_button_image = add_button_image
         
         # func Eingaben
         self.about_func = about_func
@@ -38,7 +33,7 @@ class TextMulti(ctk.CTkFrame):
 
     def create_widgets(self):
         
-        test = EntryFrame(self, self.translate_text, self.entry_str, self.add_button_image)
+        test = EntryFrame(self, self.translate_text, self.entry_str)
         test.pack_forget()
         test.grid(column=0, columnspan=2, row=0, sticky="w", padx=0, pady=0)
         
@@ -78,7 +73,7 @@ class TextMulti(ctk.CTkFrame):
             command=self.imagefunk,
             font=const.BUTTON_FONT_SMALL,
             corner_radius=0,
-            image=self.image2text
+            image=const.IMAGE2TEXT
         )
         image2TextButton.grid(column=1, row=2, sticky="ew")
         
@@ -93,7 +88,7 @@ class TextMulti(ctk.CTkFrame):
             font=const.BUTTON_FONT_SMALL,
             corner_radius=0,
             state=ctk.DISABLED,
-            image=self.copy_image
+            image=const.COPY_IMAGE
         )
         self.copy_button.grid(column=0, row=2, sticky="ew")
 

@@ -2,7 +2,7 @@ import customtkinter as ctk
 import const
 
 class TopMenu(ctk.CTkFrame):
-    def __init__(self, parent, text_multi_frame, note_frame, notizen_icon, translator_icon):
+    def __init__(self, parent, text_multi_frame, note_frame):
         super().__init__(parent, corner_radius=0)
         self.pack(fill="x", ipady=10)
 
@@ -13,8 +13,6 @@ class TopMenu(ctk.CTkFrame):
         # Eingaben aus der Hauptklasse (App)
         self.text_multi_frame = text_multi_frame
         self.note_frame = note_frame
-        self.notizen_icon = notizen_icon
-        self.translator_icon = translator_icon
 
         # place widgets
         self.create_top_menu_widgets()
@@ -25,9 +23,9 @@ class TopMenu(ctk.CTkFrame):
             master=self,
             text="Notizen",
             fg_color=const.FRAME_BACKGROUND_COLOR,
-            text_color=("black", "#5d5d5d"),
+            text_color=const.TOP_MENU_BUTTON_FONT_COLOR,
             corner_radius=0,
-            image=self.notizen_icon,
+            image=const.NOTIZEN_ICON_IMAGE,
             font=const.BUTTON_FONT,
             hover_color=const.BUTTON_COLOR_HOVER,
             command=self.menu_func_notes
@@ -38,9 +36,9 @@ class TopMenu(ctk.CTkFrame):
             master=self,
             text="Übersetzer",
             fg_color=const.FRAME_BACKGROUND_COLOR,
-            text_color=("black", "#5d5d5d"),
+            text_color=const.TOP_MENU_BUTTON_FONT_COLOR,
             corner_radius=0,
-            image=self.translator_icon,
+            image=const.TRANSLATOR_ICON_IMAGE,
             font=const.BUTTON_FONT,
             hover_color=const.BUTTON_COLOR_HOVER,
             command=self.menu_func_text_multi
