@@ -19,8 +19,8 @@ except:
     pass
 
 # TODO
-#  4. integration von chat gpt
-#  5. Wetter Api integrieren
+#  4. integration eines LLM
+#  5. Wetter Api integrieren?
 
 class App(ctk.CTk):
     def __init__(self, title, is_dark):
@@ -50,7 +50,7 @@ class App(ctk.CTk):
      
     def setup_frames(self):
         self.note_frame = Notes(
-            parent=self,
+            master=self,
             about_func=self.about_func
         )
         self.note_frame.pack_forget()
@@ -101,4 +101,3 @@ class App(ctk.CTk):
 
 if __name__ == "__main__":
     App("", darkdetect.isDark())
-    

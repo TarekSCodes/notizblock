@@ -1,9 +1,9 @@
 from NotizModel import NotizModel as NM
-from TextDateiVerarbeiter import TextDateiVerarbeiterKlasse as TDVK
+from CSVDateiHelfer import CSVDateiHelfer as CDH
 
 NOTIZ_DATEI: str = "Notizen.csv"
 
-class TextDatenVerbindung:
+class CSVDateiZugriff:
 
     def ErstelleNotiz(model) -> NM:
         """
@@ -21,9 +21,9 @@ class TextDatenVerbindung:
         """
         
         # Lädt die Datei und konvertiert den Text in eine Liste = [NotizModel, NotizModel]
-        Pfad = TDVK.KompletterDateiPfad(NOTIZ_DATEI)
-        Datei = TDVK.Dateiladen(Pfad)
-        notizenModelListe = TDVK.KovertierenInNotizModel(Datei)
+        Pfad = CDH.KompletterDateiPfad(NOTIZ_DATEI)
+        Datei = CDH.Dateiladen(Pfad)
+        notizenModelListe = CDH.KovertierenInNotizModel(Datei)
 
         # Die maximale ID finden
         aktuelleId = 1
@@ -37,6 +37,21 @@ class TextDatenVerbindung:
 
         # Konvertiert die notizenModelListe in eine string Liste
         # Speichert die string Liste in die Textdatei
-        TDVK.SpeichernInNotizTextDatei(notizenModelListe, NOTIZ_DATEI)
+        CDH.SpeichernInNotizTextDatei(notizenModelListe, NOTIZ_DATEI)
 
         return model
+
+    def LadeNotizen() -> (list | NM):
+        """
+        Lädt beim start der App die Textdatei ein und erstellt aus den Daten der Zeilen NotizModel Objekte
+        
+        Returns:
+            list NotizenModel: Gibt eine Liste mit den NotizModel Objekten zurück
+        """
+        
+        Pfad = CDH.KompletterDateiPfad(NOTIZ_DATEI)
+        Datei = CDH.Dateiladen(Pfad)
+        notizenModelListe = CDH.KovertierenInNotizModel(Datei)
+        
+        return notizenModelListe
+        

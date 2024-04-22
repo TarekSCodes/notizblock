@@ -4,7 +4,7 @@ import os
 TEXT_DATEIEN_ORDNER: str = "./TextDateien"
 
 
-class TextDateiVerarbeiterKlasse:
+class CSVDateiHelfer:
 
     def KompletterDateiPfad(dateiname: str) -> str:
         """
@@ -53,8 +53,6 @@ class TextDateiVerarbeiterKlasse:
         for NM in notizenModelListe:
             zeilen.append(f"{ NM.id }~{ NM.text }\n")
         
-        # TODO
-        # Speichern der zeilen Liste in die Textdatei
-        with open(TextDateiVerarbeiterKlasse.KompletterDateiPfad(dateiName), "w") as datei:
+        with open(CSVDateiHelfer.KompletterDateiPfad(dateiName), "w") as datei:
             for zeile in zeilen:
                 datei.writelines(f"{zeile}")

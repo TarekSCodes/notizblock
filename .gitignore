@@ -19,3 +19,7 @@ __pycache__/NotizModel.cpython-312.pyc
 /TextDateien
 /notes
 __pycache__/TextDatenVerbindung.cpython-312.pyc
+__pycache__/CSVDateiHelfer.cpython-312.pyc
+__pycache__/CSVDateiZugriff.cpython-312.pyc
+__pycache__/DatenGuiHelfer.cpython-312.pyc
+__pycache__/DatenGuiVerbindung.cpython-312.pyc

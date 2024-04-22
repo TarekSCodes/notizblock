@@ -7,4 +7,5 @@ class NotizModel:
         
         self.id = id
         self.text = text
+        
 
